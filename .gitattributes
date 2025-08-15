@@ -1,0 +1,8 @@
+# Padroniza fins de linha (LF para todos, mesmo no Windows)
+*.java text eol=lf
+
+# Arquivos compilados (binários - não devem ser versionados)
+*.class binary
+*.jar binary
+*.war binary
+*.ear binary
