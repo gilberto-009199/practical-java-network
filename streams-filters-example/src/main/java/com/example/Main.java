@@ -20,7 +20,6 @@ public class Main {
 
         new FilterWritersExample().example();
 
-        System.out.println( "PrintWriter:" );
         new PrintWriterExample().example();
 
     }
