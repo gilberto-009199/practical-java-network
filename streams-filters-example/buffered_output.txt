@@ -1,6 +1,0 @@
-== Dados Buffered ==
-Linha 1 - buffer eficiente
-Linha 2 - buffer eficiente
-Linha 3 - buffer eficiente
-Linha 4 - buffer eficiente
-Linha 5 - buffer eficiente

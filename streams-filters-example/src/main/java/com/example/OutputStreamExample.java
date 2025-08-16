@@ -47,7 +47,7 @@ public class OutputStreamExample implements Example {
     
     private void writeToFile() {
         System.out.println("\n2. Escrevendo em arquivo (FileOutputStream):");
-        File file = new File("output_direct.txt");
+        File file = new File("output_direct.example.txt");
         
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             String content = "Conteúdo direto no arquivo\n";
@@ -65,7 +65,7 @@ public class OutputStreamExample implements Example {
     
     private void writeWithBufferedStream() {
         System.out.println("\n3. Escrevendo com BufferedOutputStream:");
-        File file = new File("buffered_output.txt");
+        File file = new File("buffered_output.example.txt");
         
         try (FileOutputStream fileStream = new FileOutputStream(file);
              BufferedOutputStream bufferedStream = new BufferedOutputStream(fileStream)) {
@@ -113,7 +113,7 @@ public class OutputStreamExample implements Example {
     
     private void writeTextAsBytes() {
         System.out.println("\n5. Escrevendo texto como bytes (UTF-8):");
-        File file = new File("text_bytes.txt");
+        File file = new File("text_bytes.example.txt");
         
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             String[] lines = {
@@ -136,7 +136,7 @@ public class OutputStreamExample implements Example {
     
     private void appendToFile() {
         System.out.println("\n6. Append em arquivo existente:");
-        File file = new File("append_example.txt");
+        File file = new File("append_example.example.txt");
         
         // Escreve conteúdo inicial
         try (FileOutputStream outputStream = new FileOutputStream(file)) {

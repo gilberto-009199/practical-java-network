@@ -1,4 +1,0 @@
-Linha 1: Texto simples
-Linha 2: Acentuação: çãõáéíóú
-Linha 3: Símbolos: ©®™ € ¥
-Linha 4: Emojis: 😀🌟🎉

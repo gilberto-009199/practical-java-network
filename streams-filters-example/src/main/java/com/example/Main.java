@@ -10,7 +10,6 @@ public class Main {
         
         new FilterStreamExample().example();
                 
-        System.out.println( "BufferStream:" );
         new BufferStreamExample().example();
         
         System.out.println( "InputStreamReader:" );

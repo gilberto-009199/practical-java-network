@@ -1,3 +1,7 @@
+*.example.txt
+bin
+bin/
+bin/*
 node_modules
 HELP.md
 target/
