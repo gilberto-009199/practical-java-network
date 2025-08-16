@@ -12,10 +12,8 @@ public class Main {
                 
         new BufferStreamExample().example();
         
-        System.out.println( "InputStreamReader:" );
         new InputStreamReaderExample().example();
         
-        System.out.println( "OutputStreamWriter:" );
         new OutputStreamWriterExample().example();
         
         System.out.println( "FilterReader:" );
