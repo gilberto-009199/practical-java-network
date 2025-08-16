@@ -18,7 +18,6 @@ public class Main {
 
         new FilterReadersExample().example();
 
-        System.out.println( "FilterWriters:" );
         new FilterWritersExample().example();
 
         System.out.println( "PrintWriter:" );
