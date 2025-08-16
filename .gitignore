@@ -1,7 +1,6 @@
 bin
-src
-src/
-src/*
+bin/
+bin/*
 node_modules
 HELP.md
 target/
