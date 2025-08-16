@@ -16,9 +16,15 @@ public class FilterStreamExample implements Example {
         // 2. Exemplo com Base64 (codificação)
         base64Example();
         
+        
+       // 3. Filtro personalizado Ant Palavroes
+        customFilterExample();
+        
     }
     
-    private void gzipExample() {
+    
+
+	private void gzipExample() {
         System.out.println("1. GZIP Compression Example:");
         String originalText = """ 
         	Este é um texto que será compactado usando GZIP.
@@ -93,4 +99,8 @@ public class FilterStreamExample implements Example {
         }
     }
 
+    private void customFilterExample() {
+    	
+	}
+    
 }
