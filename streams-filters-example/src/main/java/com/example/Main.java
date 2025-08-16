@@ -15,8 +15,7 @@ public class Main {
         new InputStreamReaderExample().example();
         
         new OutputStreamWriterExample().example();
-        
-        System.out.println( "FilterReader:" );
+
         new FilterReadersExample().example();
 
         System.out.println( "FilterWriters:" );
