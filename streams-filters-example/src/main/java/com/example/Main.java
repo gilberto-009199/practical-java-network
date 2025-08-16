@@ -8,7 +8,7 @@ public class Main {
         
         new OutputStreamExample().example();
         
-        System.out.println( "FilterStream:" );
+        
         new FilterStreamExample().example();
                 
         System.out.println( "BufferStream:" );
