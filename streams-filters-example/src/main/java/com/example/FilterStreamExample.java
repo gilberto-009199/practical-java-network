@@ -1,10 +1,10 @@
 package com.example;
 
 
-public class FilterStreamExample {
+public class FilterStreamExample implements Example{
 
-    public static void example(){
+    public void example(){
 
     }
-
+    
 }

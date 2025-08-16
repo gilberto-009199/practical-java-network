@@ -1,9 +1,9 @@
 package com.example;
 
-public class OutputStreamExample {
+public class OutputStreamExample implements Example{
 
-    public static void example(){
+    public void example(){
 
     }
-
+    
 }

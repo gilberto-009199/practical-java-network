@@ -1,8 +1,8 @@
 package com.example;
 
-public class BufferStreamExample {
+public class BufferStreamExample implements Example{
 
-    public static void example(){
+    public void example(){
 
     }
     
