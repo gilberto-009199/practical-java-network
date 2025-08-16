@@ -2,7 +2,7 @@
 
 Content in Pratical:
 
-  + []()
+  + [Streams](./streams-filters-example) - Streams, Flux, Bufferets and Readers/Writers
 
 
 
