@@ -6,7 +6,6 @@ public class Main {
 
         new InputStreamExample().example();
         
-        System.out.println( "OutputStream:" );
         new OutputStreamExample().example();
 
         
