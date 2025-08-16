@@ -3,6 +3,7 @@
 Content in Pratical:
 
   + [Streams](./streams-filters-example) - Streams, Filter, Buff and Readers/Writers 
+  + [Zipper](./zipper) - FIle to GZip File, using GZIPOutputStream in `java.util.zip`
 
 
 
