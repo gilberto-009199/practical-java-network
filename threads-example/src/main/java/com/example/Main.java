@@ -13,6 +13,8 @@ public class Main {
 
         // SyncronizationThreadExample
         new SyncronizationThreadExample().example();
+        // @todo add example use atomic
+
 
         // DeadLockThreadExample
 
