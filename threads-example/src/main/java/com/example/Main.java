@@ -17,6 +17,9 @@ public class Main {
 
 
         // DeadLockThreadExample
+        new DeadLockThreadExample().example();
+        new DeadLockSolutionExample().example();
+        // @todo add 3° component for lock, dependencie cicle
 
         // SchedulingThreadExample
 
