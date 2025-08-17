@@ -12,7 +12,7 @@ public class Main {
         new CallableAndExecutorExample().example();
 
         // SyncronizationThreadExample
-
+        new SyncronizationThreadExample().example();
 
         // DeadLockThreadExample
 
