@@ -8,6 +8,7 @@ public class Main {
         new ThreadsAndRunnableExample().example();
 
         // ReturningProcessThreadExample
+        new ReturningProcessThreadExample().example();
 
         // SyncronizationThreadExample
 

@@ -3,6 +3,9 @@ package com.example;
 public class ThreadsAndRunnableExample implements Example {
 
     public void example() {
+
+        System.out.println("\n=== Threads, Runanbles and Executors ===\n");
+
         // 1. Demonstração básica de execução de threads
         runningThreads();
 
