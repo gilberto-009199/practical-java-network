@@ -7,6 +7,7 @@ Content in Pratical:
   + [Threads](./threads-example) - Threads, Runnable, ExecutorService, Callable e Syncronized;
   + [IP and Network Interfaces](./InetAddress-networkInterface-example) - InetAddress class, NetworkInterfaces class
   + [Program NsLookup](./nslookup) - DNS resolver using InetAddress;
+  + [URI and URL](./uri-url-example) - URI, URL, Proxy, Authentication in http
 
 
 
