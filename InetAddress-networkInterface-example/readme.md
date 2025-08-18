@@ -1,1057 +1,940 @@
+>Eu, esse e um capitulo aonde varias coisas não funcionarão como mencionado no livro
+> O livro e antigo, mais seus conceitos e ate example na maior funciona bem
 
-### Capitulo 3 - Threads
+
+### Capitulo 4 - Internet Addresses
+
+Ele faz um longa descrição sobre como opera o ipv4 e o ipv6 , mas e o memsoque do capitulo 1. Depois começa a falar da classe `InetAddress`.
+
+#### The InetAddress Class
+
+A classe `java.net.InetAddress` é a representação de alto nível de um endereço IP (IPv4 ou IPv6) em Java. Ela é amplamente utilizada por outras classes de rede, como `Socket`, `ServerSocket`, `URL`, `DatagramSocket`, entre outras. Um objeto `InetAddress` geralmente contém um **hostname** e um **endereço IP**.
 
 
-O autor nos fala oomo antigamente se usava fork de processo para cada nova conexão.
-E como isso gastava bastante recursos da maquina.
+Não há construtores públicos em `InetAddress`. Em vez disso, usamos **métodos estáticos** (factory methods) que consultam o DNS para resolver um hostname.
 
->Livro, pagina 77
->Por exemplo, quando baixávamos quilobytes de software gratuito de um site FTP popular pelos nossos modems de 2.400 bps usando o Kermit, frequentemente encontrávamos mensagens de erro como esta:
->```java 
->% ftp eunl.java.sun.com
-> Connected to eunl.javasoft.com. 220 softwarenl FTP server (wu-2.4.2-academ[BETA- 16]+opie-2.32(1) 981105) ready. Name (eunl.java.sun.com:elharo): 
-> 	anonymous 530- 530- Server is busy.
-> 	 Please try again later or try one of our other 530- ftp servers at ftp.java.sun.com. Thank you. 530- 530 User anonymous access denied. Login failed.
->```
->O problema era que a maioria dos servidores FTP bifurcava um novo processo para cada conexão (ou seja, 100 usuários simultâneos significavam 100 processos adicionais para processar).
-> Como os processos são itens bastante pesados, muitos deles poderiam rapidamente levar um servidor à falência.
-> O problema não era que as máquinas não fossem potentes o suficiente ou que a rede não fosse rápida o suficiente; era que os servidores FTP eram mal implementados.
-> Os primeiros servidores web também sofriam desse problema, embora o problema fosse um pouco mascarado pela natureza transitória das conexões HTTP.
-> Quando um arquivo é recuperado em vez de permanecer conectado por minutos ou horas seguidas, os usuários da web não sobrecarregam o servidor tanto quanto os usuários de FTP. 
-> No entanto, o desempenho do servidor web ainda se degrada com o aumento do uso. O problema fundamental é que, embora seja fácil escrever código que trate cada conexão de entrada e cada nova tarefa como um processo separado (pelo menos no Unix), essa solução não é escalável.
-> Existem duas soluções para esse cenario:
-> A primeira é reutilizar processos em vez de gerar novos. Quando o servidor é inicializado, um número fixo de processos (digamos, 300) é gerado para lidar com as solicitações. As solicitações recebidas são colocadas em uma fila. Cada processo remove uma solicitação da fila, atende a solicitação e retorna à fila para receber a próxima solicitação.
-> A segunda solução para esse problema é usar threads leves em vez de processos pesados para lidar com conexões.
->  Enquanto cada processo separado tem seu próprio bloco de memória, as threads consomem menos recursos porque compartilham memória.
->  Usar threads em vez de processos pode aumentar em três vezes o desempenho do servidor.
->  Combinando isso com um conjunto de threads reutilizáveis (em oposição a um conjunto de processos reutilizáveis), seu servidor pode rodar nove vezes mais rápido, tudo no mesmo hardware e conexão de rede!
+**1. `getByName(String host)`**
 
-O autor nos da uma informação interesante:
-> Livro, pagina 78
-> A maioria das máquinas virtuais Java para devido ao esgotamento de memória em algum lugar entre 4.000 e 20.000 threads simultâneas. No entanto, ao usar um conjunto de threads em vez de gerar novas threads para cada conexão, menos de cem threads podem lidar com milhares de conexões curtas por minuto.
+Consulta o DNS para obter o endereço IP associado a um hostname.
+- Se o hostname não for encontrado, lança `UnknownHostException`.
+- Pode retornar um endereço em cache (sem consultar o DNS novamente).
 
-Interresante saber desses numeros.
-
-O autor nos fala da necessidade de conhecer como trabalhar de forma segura para evitar.
-As threads devem garantir que os recursos que utilizam atualmente e somente usada por ela, estrategia de lock. 
-As threas devem ser cuidadosas mas devem tomar cuidado apra não entrarem em um dedadlock, aonde 1 thread tem o recurso A e precisa do B , enquanto tem 1 thread que tem o recusrso B , mas precisa do A, nesse caso ocorrerá um deadlock nem uma nem outra consegue proceseguir com sua tarefa.
-
-O auto fala sobre como invocar therads e a diferença entre theads e runnables.
-Oque para min faz sentido não tomarei noda por que que não existem nenhum dados ou informação alem doque um javeiro simples precisaria já saber.
-
->Livro, pagina 80
->Um programa com uma única thread termina quando o método main() retorna.
->Um programa com várias threads termina quando os métodos main() e run() de todas as threads não daemon retornam. (As threads daemon executam tarefas em segundo plano, como coleta de lixo, e não impedem a saída da máquina virtual.)
-
-O autor nos da um exemplo de programa que sua multitread apra calcular o hash de um arquivo:
+**Exemplo:**
 ```java
-
-import java.io.*;
-import java.security.*;
-import javax.xml.bind.*; // for DatatypeConverter; requires Java 6 or JAXB 1.0 
-public class DigestThread extends Thread {
-	private String filename;
-	public DigestThread(String filename) {
-		this.filename = filename;
-	} 
-	@Override 
-	public void run() {
-		try { 
-			FileInputStream in = new FileInputStream(filename);
-			MessageDigest sha = MessageDigest.getInstance("SHA-256");
-			DigestInputStream din = new DigestInputStream(in, sha);
-			
-			while (din.read() != -1);
-			
-			din.close();
-			byte[] digest = sha.digest();
-			StringBuilder result = new StringBuilder(filename);
-			result.append(": "); 
-			result.append(DatatypeConverter.printHexBinary(digest));
-			System.out.println(result);
-		} catch (IOException ex) {
-			System.err.println(ex); 
-		} catch (NoSuchAlgorithmException ex) {
-			System.err.println(ex);
-		} 
-	} 
-	public static void main(String[] args) {
-		for (String filename : args) {
-			 Thread t = new DigestThread(filename);
-			 t.start();
-		} 
-	}
-}
-```
-> Livro, pagina 81
-> Observe que toda a saída desta thread é primeiro construída em uma variável local StringBuilder, result. Isso é então impresso no console com uma invocação de método. O caminho mais óbvio de imprimir as partes uma de cada vez usando System.out.print() não é seguido. Há um motivo para isso, que discutiremos mais adiante
-
-
-#### Returning Information from a Thread
-
-As threads e seus metodos start e run não retonandm dados, Para retornar dados temos 2 estrategias:
-+ Armazenar o processamento em um atributo na classe
-+ Criar um metodos getter para acessar esse resultado depois que a therad termina.
-
-Ele nos da 2 exemplo:
-
->Livro, pagina 84
-```java
-
-import java.io.*;
-import java.security.*;
-public class ReturnDigest extends Thread { 
-	private String filename;
-	private byte[] digest;
-	public ReturnDigest(String filename) {
-		this.filename = filename; 
-	} 
-	@Override
-	public void run() { 
-		try { 
-			FileInputStream in = new FileInputStream(filename);
-			MessageDigest sha = MessageDigest.getInstance("SHA-256");
-			DigestInputStream din = new DigestInputStream(in, sha);
-			
-			while (din.read() != -1) ; // read entire file
-			
-			din.close();
-			digest = sha.digest();
-		} 
-		catch (IOException ex) { System.err.println(ex); } 
-		catch (NoSuchAlgorithmException ex) { System.err.println(ex); } 
-	} 
-	
-	public byte[] getDigest() { return digest; } }
-
-```
-
-```java
-
-import javax.xml.bind.*; // for DatatypeConverter 
-
-public class ReturnDigestUserInterface { 
-	public static void main(String[] args) {
-		for (String filename : args) { 
-			// Calculate the digest 
-			ReturnDigest dr = new ReturnDigest(filename);
-			dr.start(); // Now print the result 
-			StringBuilder result = new StringBuilder(filename);
-			result.append(": "); 
-			byte[] digest = dr.getDigest();
-			result.append(DatatypeConverter.printHexBinary(digest)); 
-			System.out.println(result); 
-		} 
-	} 
+try {
+    InetAddress address = InetAddress.getByName("www.oreilly.com");
+    System.out.println(address); // Saída: www.oreilly.com/208.201.239.36
+} catch (UnknownHostException ex) {
+    System.err.println("Host não encontrado.");
 }
 ```
 
-É obvio que tal abordagem não nos permite fugir do null point execption, afinal não ha garantia deque a therad termine antes de invocarmos o getDigest().
+**2. `getAllByName(String host)`**
 
-Outra forma de obeter o retorno, seria deixar nossa thread de processamento, nós avisar quando temrinou. 
+Retorna **todos os endereços IP** associados a um hostname (útil para hosts com múltiplos IPs).
 
-Criaremos uma metodo na nossa classe principal e deixariamos a thread principal continuar a partir dai.
-
-O autor chamou essa abordagem de Callbacks. Oque faz sentido. Nesse cenario ele coloca uma static na classe que roda a thread.
-
+**Exemplo:**
 ```java
-
-import java.io.*;
-import java.security.*;
-public class CallbackDigest implements Runnable {
-	private String filename;
-	public CallbackDigest(String filename) {
-		this.filename = filename;
-	} 
-	@Override
-	public void run() { 
-		try {
-			FileInputStream in = new FileInputStream(filename);
-			MessageDigest sha = MessageDigest.getInstance("SHA-256");
-			DigestInputStream din = new DigestInputStream(in, sha);
-			
-			while (din.read() != -1) ; // read entire file
-			
-			din.close();
-			 
-			byte[] digest = sha.digest(); 
-			CallbackDigestUserInterface.receiveDigest(digest, filename); 
-		} catch (IOException ex) { 
-			System.err.println(ex);
-		} catch (NoSuchAlgorithmException ex) {
-			System.err.println(ex); 
-		} 
-	} 
-}
-```
-
-```java
-import javax.xml.bind.*; // for DatatypeConverter; requires Java 6 or JAXB 1.0 
-
-public class CallbackDigestUserInterface { 
-	
-	public static void receiveDigest(byte[] digest, String name) { 
-		StringBuilder result = new StringBuilder(name);
-		result.append(": "); 
-		result.append(DatatypeConverter.printHexBinary(digest)); 
-		System.out.println(result);
-	}
-	
-	public static void main(String[] args) {
-		for (String filename : args) {
-			// Calculate the digest
-			CallbackDigest cb = new CallbackDigest(filename);
-			Thread t = new Thread(cb);
-			t.start(); 
-		} 
-	} 
-}
-```
-
-Essa aboradem funcioan bem, mas o ideial segundo o autro reia n usar um static no metodo e passar a propria intancia, para que thread chame o metodo do objeto em si.
-
-```java
-
-import java.io.*;
-import java.security.*;
-
-public class InstanceCallbackDigest implements Runnable {
-
-	private String filename;
-	private InstanceCallbackDigestUserInterface callback;
-
-	public InstanceCallbackDigest(String filename,
-		InstanceCallbackDigestUserInterface callback) {
-		
-		this.filename = filename;
-		this.callback = callback;
-	} 
-	@Override 
-	public void run() {
-		try {
-			FileInputStream in = new FileInputStream(filename);
-			MessageDigest sha = MessageDigest.getInstance("SHA-256");
-			DigestInputStream din = new DigestInputStream(in, sha);
-			
-			while (din.read() != -1) ; // read entire file 
-			
-			din.close();
-			byte[] digest = sha.digest();
-			callback.receiveDigest(digest);
-		} catch (IOException | NoSuchAlgorithmException ex) { 
-			System.err.println(ex); 
-		} 
-	} 
-}
-```
-
-```java
-
-import javax.xml.bind.*; // for DatatypeConverter; requires Java 6 or JAXB 1.0 
-
-public class InstanceCallbackDigestUserInterface {
-	private String filename;
-	private byte[] digest;
-	public InstanceCallbackDigestUserInterface(String filename) { 
-		this.filename = filename; 
-	}
-	
-	public void calculateDigest() {
-		InstanceCallbackDigest cb = new InstanceCallbackDigest(filename, this);
-		Thread t = new Thread(cb);
-		t.start(); 
-	}
-	
-	void receiveDigest(byte[] digest) { 
-		this.digest = digest;
-		System.out.println(this); 
-	}
-	@Override 
-	public String toString() { 
-		String result = filename + ": ";
-		if (digest != null) { 
-			result += DatatypeConverter.printHexBinary(digest); 
-		} else { 
-			result += "digest not available";
-		} 
-		
-		return result; 
-	} 
-	
-	public static void main(String[] args) { 
-		for (String filename : args) {
-			// Calculate the digest
-			InstanceCallbackDigestUserInterface d = new InstanceCallbackDigestUserInterface(filename);
-			d.calculateDigest(); 
-		} 
-	} 
+try {
+    InetAddress[] addresses = InetAddress.getAllByName("www.google.com");
+    for (InetAddress addr : addresses) {
+        System.out.println(addr);
+    }
+} catch (UnknownHostException ex) {
+    System.err.println("Host não encontrado.");
 }
 ```
 
 
-#### Futures, Callables, and Executors
+**3. `getLocalHost()`**
 
-O autor nos fala sobre o ExecutorService, como ele pdoe permitir executar operações com threads e etc, dando um exmplo de calculo matematico:
+Retorna o endereço IP da máquina local.
+- Se não houver conexão com DNS, retorna o **loopback** (`localhost/127.0.0.1`).
+
+**Exemplo:**
+```java
+InetAddress local = InetAddress.getLocalHost();
+System.out.println(local); // Exemplo: meu-pc/192.168.1.100
+```
+
+
++ **4. `getByAddress(byte[] addr)` e `getByAddress(String hostname, byte[] addr)`**  
+  Cria um `InetAddress` a partir de um **array de bytes** (IPv4: 4 bytes, IPv6: 16 bytes).
+- Não consulta o DNS, útil para endereços não registrados ou redes locais.
+- O segundo método permite associar um hostname ao IP.
+
+**Exemplo:**
+```java
+byte[] ip = {192, 168, 1, 1};
+InetAddress address = InetAddress.getByAddress(ip);
+InetAddress namedAddress = InetAddress.getByAddress("meu-servidor", ip);
+```
+
+
+**Métodos Principais**
+
+| Método                     | Descrição                                                    |
+| -------------------------- | ------------------------------------------------------------ |
+| `getHostName()`            | Retorna o hostname (faz consulta DNS reversa se necessário). |
+| `getHostAddress()`         | Retorna o IP no formato `String` (ex: `"192.168.1.1"`).      |
+| `isReachable(int timeout)` | Testa se o host está acessível (ping).                       |
+
+**Exemplo de uso:**
 
 ```java
+InetAddress google = InetAddress.getByName("www.google.com");
+System.out.println(google.getHostName()); // www.google.com
+System.out.println(google.getHostAddress()); // 172.217.0.132
+System.out.println(google.isReachable(1000)); // true ou false
+```
 
-import java.util.concurrent.Callable;
 
-class FindMaxTask implements Callable<Integer> {
+**Tratamento de Exceções**
+- `UnknownHostException`: Lançada quando o host não pode ser resolvido.
+- `SecurityException`: Pode ocorrer se o código estiver em um ambiente restrito (ex.: applets).
 
-	private int[] data;
-	private int start;
-	private int end;
-	
-	FindMaxTask(int[] data, int start, int end) {
-		this.data = data;
-		this.start = start;
-		this.end = end;
-	}
-
-	public Integer call() { 
-		int max = Integer.MIN_VALUE;
-		
-		for (int i = start; i < end; i++) {
-			if (data[i] > max) max = data[i];
-		} 
-		return max; 
-	} 
+**Exemplo seguro:**
+```java
+try {
+    InetAddress address = InetAddress.getByName("host-desconhecido");
+} catch (UnknownHostException ex) {
+    System.err.println("Host não encontrado: " + ex.getMessage());
 }
 ```
 
-```java
+**Cenários de Uso**
+1. **Resolução de DNS:** Converter hostnames em IPs e vice-versa.
+2. **Verificação de conectividade:** Usar `isReachable()` para testar acessibilidade.
+3. **Redes locais:** Criar endereços para dispositivos não registrados em DNS (ex.: `getByAddress`).
 
-import java.util.concurrent.*;
+A classe `InetAddress` é essencial para trabalhar com endereços IP em Java, oferecendo métodos para:
+- Consultar DNS (`getByName`, `getAllByName`).
+- Obter o endereço local (`getLocalHost`).
+- Criar endereços manualmente (`getByAddress`).
 
-public class MultithreadedMaxFinder {
+Use-a em aplicações de rede para resolver hostnames, testar conectividade ou gerenciar endereços em ambientes sem DNS.
 
-	public static int max(int[] data)
-	throws InterruptedException, ExecutionException {
-	
-		if (data.length == 1) { 
-			return data[0];
-		} else if (data.length == 0) { 
-			throw new IllegalArgumentException(); 
-		} 
-		// split the job into 2 pieces 
-		FindMaxTask task1 = new FindMaxTask(data, 0, data.length/2);
-		FindMaxTask task2 = new FindMaxTask(data, data.length/2, data.length); 
-		// spawn 2 threads 
-		ExecutorService service = Executors.newFixedThreadPool(2);
-		
-		Future<Integer> future1 = service.submit(task1);
-		Future<Integer> future2 = service.submit(task2);
-		
-		return Math.max(future1.get(), future2.get()); 
-	} 
-}
-```
 
-Usando a classe callable podemos submeter ao nossos executorService e receber uma future.
+##### Caching
 
-##### Synchronization
+A classe `InetAddress` em Java implementa **cache de consultas DNS** para melhorar desempenho, evitando repetir buscas desnecessárias. Aqui estão os pontos-chave:
 
-O autor nos da um exemplo de como threads escrevendo em `System.out`, acabam sobreescrevendo a saida uma das outras, quando usam caracter por caracter, e se elas escrever em bloco, a saida sai formatada, mas a ordem continua incerta.
 
-Para conbtrollar esse caso ele nos da uma estrategia, sincronização de blocos.
+**1. Cache de Resultados Positivos**
 
-##### Synchronized Blocks
+- **O que é armazenado**: Endereços IP de hosts resolvidos com sucesso.
+- **Tempo padrão**:
+    - O cache **nunca expira** por padrão (resultados positivos são mantidos indefinidamente enquanto a JVM estiver em execução).
+    - Pode ser alterado pela propriedade do sistema:
+      ```java
+      java.security.Security.setProperty("networkaddress.cache.ttl", "60"); // Expira em 60 segundos
+      ```
+    - Valores especiais:
+        - **`0`**: Desativa o cache (sempre consulta o DNS).
+        - **`-1`**: Cache "eterno" (padrão).
 
-Nesse cenario pode colocar um objeto como lock entre as threads, por exemplo:
 
-```java
+**2. Cache de Resultados Negativos (Falhas)**
 
-synchronized (System.out) { 
-	System.out.print(input + ": "); 
-	System.out.print(DatatypeConverter.printHexBinary(digest));
-	System.out.println(); 
-}
+- **O que é armazenado**: Falhas em consultas DNS (ex.: `UnknownHostException`).
+- **Tempo padrão**:
+    - **10 segundos** (para evitar bloquear repetidamente um host temporariamente inacessível).
+    - Configurável via:
+      ```java
+      java.security.Security.setProperty("networkaddress.cache.negative.ttl", "30"); // Expira em 30 segundos
+      ```
+    - Valores especiais:
+        - **`0`**: Sem cache (sempre repete a consulta).
+        - **`-1`**: Cache "eterno" (não recomendado para falhas).
 
-```
 
-Assim cada thread so acessara essa excução quando o SYtem.out tiver sido liberado.
+**3. Cenários e Impactos**
 
-Ele nós da outro exemplo, usando uma classe de logs. 
+- **Problema com IPs dinâmicos**:  
+  Se um host mudar seu IP durante a execução do programa, o cache pode retornar o valor antigo.
+    - **Solução**: Redefina o TTL (Time-To-Live) para um valor baixo ou `0` em ambientes com IPs voláteis.
 
-```java
+- **Falhas temporárias**:  
+  Um host pode ficar inacessível brevemente (ex.: timeout de DNS), mas o cache de falhas pode impedir tentativas imediatas.
+    - **Solução**: Reduza `networkaddress.cache.negative.ttl` para reagir mais rápido a recuperações.
 
-import java.io.*;
-import java.util.*;
-public class LogFile {
-	private Writer out;
-	public LogFile(File f) throws IOException {
-		FileWriter fw = new FileWriter(f);
-		this.out = new BufferedWriter(fw);
-	}
-	
-	public void writeEntry(String message) throws IOException {
-		Date d = new Date();
-		out.write(d.toString());
-		out.write('\t');
-		out.write(message);
-		out.write("\r\n");
-	}
-	
-	public void close() throws IOException {
-		out.flush();
-		out.close(); 
-	} 
-}
 
-```
+**4. Cache em Outros Níveis**
 
-E evidente que classes chamando os metodos de write passo a passo, iram conflitar.
-Uma ira escrever /t para tabular a menssagem, enquanto outra escreve \r\n para mudar de linha.
+Além do cache da JVM:
+- **Sistema operacional**: Mantém seu próprio cache DNS (ex.: `nscd` no Linux).
+- **Servidores DNS intermediários**: Podem cachear respostas por horas ou dias.
+    - **Implicação**: Mudanças de IP podem demorar a se propagar globalmente.
 
-Então ele nós apresenta uma novamente a solução:
+
+**5. Exemplo de Configuração**
 
 ```java
+import java.net.InetAddress;
+import java.security.Security;
 
-public void writeEntry(String message) throws IOException {
-	synchronized (out) {
-		Date d = new Date();
-		out.write(d.toString());
-		out.write('\t');
-		out.write(message);
-		out.write("\r\n"); 
-	} 
+public class DNSCacheExample {
+    public static void main(String[] args) throws Exception {
+        // Configura cache para expirar em 30 segundos (sucessos) e 5 segundos (falhas)
+        Security.setProperty("networkaddress.cache.ttl", "30");
+        Security.setProperty("networkaddress.cache.negative.ttl", "5");
+
+        // Primeira consulta (pode ir ao DNS)
+        InetAddress addr1 = InetAddress.getByName("www.google.com");
+        System.out.println(addr1);
+
+        // Segunda consulta (usará cache, se dentro do TTL)
+        InetAddress addr2 = InetAddress.getByName("www.google.com");
+        System.out.println(addr2);
+    }
 }
 ```
 
 
-nesse caos usamo o out put apra simcronizar, mas segundo o autro existe uma segunda possiblidade, sincronizar em nossa propria classe.
+**6. Boas Práticas**
+
+- **Ambientes dinâmicos**:  
+  Reduza o TTL (ex.: 30 segundos) para aplicações que dependem de atualizações frequentes de DNS.
+- **Ambientes estáticos**:  
+  Mantenha o padrão (`-1`) para maximizar desempenho.
+- **Depuração**:  
+  Desative o cache temporariamente (`TTL = 0`) para testar problemas de resolução de nomes.
+
+O cache de `InetAddress` é crucial para **evitar consultas DNS repetidas**, mas requer configuração cuidadosa em cenários onde:
+- **IPs mudam frequentemente** (ex.: cloud scaling).
+- **Falhas temporárias devem ser rapidamente reavaliadas**.
+
+Use as propriedades `networkaddress.cache.ttl` e `networkaddress.cache.negative.ttl` para ajustar o comportamento conforme necessário.
+
+
+##### Lookups by IP address
+
+
+**Como `getByName()` Funciona com IPs?**
+
+Quando você passa um **endereço IP** (ex: "192.168.1.1") para `InetAddress.getByName()`:
+1. **Não há consulta DNS inicial**:
+    - Java cria um objeto `InetAddress` imediatamente, **sem verificar se o IP existe ou é alcançável**.
+    - O "hostname" temporário é definido como o próprio IP (ex: `"192.168.1.1"`).
+
+2. **Consulta DNS só ocorre quando necessário**:
+    - Se você chamar `getHostName()`, o Java **só então** faz uma **busca reversa de DNS** para resolver o nome do host.
+    - Se a busca reversa falhar, o hostname permanece como o IP original (sem lançar exceção).
+
+**Exemplo Prático**:
 
 ```java
+InetAddress ipOnly = InetAddress.getByName("8.8.8.8"); // Sem DNS aqui!
+System.out.println(ipOnly); // Saída: /8.8.8.8 (hostname ainda não resolvido)
 
-public void writeEntry(String message) throws IOException {
-	synchronized (this) {
-		Date d = new Date();
-		out.write(d.toString());
-		out.write('\t');
-		out.write(message);
-		out.write("\r\n"); 
-	} 
-}
-
+// Solicita o hostname (agora faz DNS reverso)
+System.out.println(ipOnly.getHostName()); // Saída: dns.google (resolvido via DNS)
 ```
 
->Eu, me parece uma pessima ideia, exceto se nós formos uma singleton
 
-###### Synchronized Methods
+**Por Que Preferir Hostnames a IPs?**
+1. **Estabilidade**:
+    - Hostnames (ex: `www.oreilly.com`) raramente mudam, enquanto IPs podem ser alterados (ex: balanceamento de carga, migração de servidores).
 
-ao inves de selecioanrmos o objeto sobe o qual queremos sincronizar podemos só usar a palavra reservada na função:
+2. **Flexibilidade**:
+    - Um hostname pode representar múltiplos IPs (útil para redundância e CDNs).
 
-```java
-
-public synchronized void writeEntry(String message) throws IOException {
-	Date d = new Date();
-	out.write(d.toString());
-	out.write('\t');
-	out.write(message);
-	out.write("\r\n"); 
-}
-
-```
-
-> Eu, esse e a forma mais comun, embora ela caresa de lock em areas criticas, ela não esta vinculado a um recorso esclusivo , mas somente a entradada função em si.
-> Logo, se eu quise-se proteger uma fila ou algo asism eu ainda precisaria usar sincronized no objeto fial em si, para que quaisquer metodos que chamem a fila tbm obedeção essa mesma regra.
-
->Eu, estou errado ao usar o sincronized vc sincroniza a si mesmo.
->Vc não fica so lockado na quela função, fica em todas as funções sincronizeds da quela instancia. Aou seja seria como um bloco `sincronized(this){ ... }` 
-
->Livro, pagina 99
->Simplesmente adicionar o modificador synchronized a todos os métodos não é uma solução abrangente para problemas de sincronização.
-> Por um lado, isso causa uma grave perda de desempenho em muitas VMs (embora as VMs mais recentes tenham melhorado bastante nesse aspecto), potencialmente tornando seu código três vezes mais lento.
-> Segundo, aumenta drasticamente as chances de deadlock.
-> Terceiro, e mais importante, nem sempre é o objeto em si que você precisa proteger contra modificações ou acessos simultâneos, e sincronizar na instância da classe do método pode não proteger o objeto que você realmente precisa proteger.
-
-###### Alternatives to Synchronization
-
-Existem várias técnicas que evitam completamente a necessidade de sincronização.
-A primeira é usar variáveis locais em vez de campos sempre que possível. Variáveis locais não apresentam problemas de sincronização. Toda vez que um método é inserido, a máquina virtual cria um conjunto completamente novo de variáveis locais para o método.
-Essas variáveis são invisíveis de fora do método e são destruídas quando o método é encerrado. Como resultado, é impossível que uma variável local seja compartilhada por duas threads diferentes. 
-Cada thread tem seu próprio conjunto separado de variáveis locais.
-
-Argumentos de métodos de tipos primitivos também são protegidos contra modificações em threads separadas, pois Java passa argumentos por valor, e não por referência.
-
-Argumentos de string são seguros porque são imutáveis (ou seja, uma vez criado um objeto String , ele não pode ser alterado por nenhuma thread). 
-Um objeto imutável nunca muda de estado.
-
-Os valores de seus campos são definidos uma vez quando o construtor é executado e nunca são alterados.
-
-Os argumentos do StringBuilder não são seguros porque não são imutáveis; eles podem ser alterados após serem criados.
-
-Em alguns casos, você pode usar uma classe thread-safe, mas mutável, do pacote java.util.concurrent.atomic.
-
-Em particular, em vez de usar um int, você pode usar um AtomicInteger. Em vez de usar um long, você pode usar um AtomicLong. Em vez de usar um booleano, você pode usar um AtomicBoolean. 
-Em vez de usar um int[], você pode usar um AtomicIntegerArray. Em vez de uma variável de referência, você pode armazenar um objeto dentro de uma AtomicReference, embora observe que isso não torna o objeto em si thread-safe, apenas a obtenção e a configuração da variável de referência.
-Essas classes podem ser mais rápidas do que o acesso sincronizado aos seus respectivos tipos primitivos se puderem aproveitar as instruções thread-safe rápidas em nível de máquina em CPUs modernas
-
-Para coleções como mapas e listas, você pode envolvê-las em uma versão thread-safe usando os métodos de java.util.Collections.
-Por exemplo, se você tiver um conjunto foo, poderá obter uma visualização thread-safe desse conjunto com Collections.synchronizedSet(foo). Se você tiver uma lista foo, usaria Collections.synchronizedList(foo).
-Para um mapa, chame Collections.synchronizedMap(foo) e assim por diante.
-Para que isso funcione, você deve, doravante, usar apenas a visualização retornada por Collections.synchronizedSet/List/Map.
-
-Em todos os casos, perceba que é apenas uma única invocação de método que é atômica. Se você precisar executar duas operações no valor atômico em sucessão sem possível interrupção, ainda precisará sincronizar. Assim, por exemplo, mesmo que uma lista seja sincronizada via Collections.synchronizedList(), você ainda precisará sincronizar nele se quiser iterar pela lista, pois isso envolve muitas operações atômicas consecutivas.
-Embora cada chamada de método seja seguramente atômica, a sequência de operações não está isenta de sincronização explícita
+3. **Legibilidade**:
+    - `www.google.com` é mais intuitivo que `142.250.218.68`.
 
 
-##### Deadlock
-
-O deadlock ocorre quando duas threads precisam de acesso exclusivo ao mesmo conjunto de recursos e cada thread mantém o bloqueio em um subconjunto diferente desses recursos.
-
-> Eu, normalmente, crio um terceiro elemento que contem o conjunto inteiro e logo esse terceiro elemento so pode estar com o 1°  ou o 2° elemento, e não disperso entre ambos. Iqual como faço como uma dependencia ciclica.
-
-Se nenhuma das threads estiver disposta a abrir mão dos recursos que possui, ambas param por tempo indeterminado. Isso não é exatamente um travamento no sentido clássico, pois o programa ainda está ativo e se comportando normalmente da perspectiva do sistema operacional, mas para o usuário a diferença é insignificante.
+**Quando Usar IPs Diretamente?**:
+- **Ambientes controlados**: Redes locais onde hosts não têm nomes DNS.
+- **Performance crítica**: Evitar atrasos de resolução DNS (em aplicações de baixa latência).
+- **Falha em DNS**: Se o sistema de nomes estiver indisponível.
 
 
+**Cuidados Importantes**:
+1. **IPs inválidos ou inacessíveis**:
+    - `InetAddress.getByName("999.999.999.999")` cria o objeto, mas tentativas de conexão falharão.
+    - Use `isReachable()` para testar acessibilidade:
+      ```java
+      InetAddress ip = InetAddress.getByName("192.168.1.1");
+      System.out.println(ip.isReachable(1000)); // true/false
+      ```  
 
-#### Thread Scheduling
+2. **Busca reversa pode falhar silenciosamente**:
+    - Se `getHostName()` não resolver o nome, retorna o IP em formato `String` (sem exceção).
 
-Quando várias threads estão em execução ao mesmo tempo (mais propriamente, quando várias threads estão disponíveis para serem executadas ao mesmo tempo), você precisa considerar questões de agendamento de threads. 
-
-Você precisa garantir que todas as threads importantes tenham pelo menos algum tempo para serem executadas e que as threads mais importantes tenham mais tempo. 
-
-Além disso, você quer garantir que as threads sejam executadas em uma ordem razoável.
-
-Se o seu servidor web tiver 10 requisições enfileiradas, cada uma das quais requer 5 segundos para ser processada, você não quer processá-las em série.
-
-Se fizer isso, a primeira requisição terminará em 5 segundos, mas a segunda levará 10, a terceira 15 e assim por diante até a última requisição, que terá que esperar quase um minuto para ser atendida.
-
-Nesse ponto, o usuário provavelmente já foi para outra página. Ao executar threads em paralelo, você pode ser capaz de processar todas as 10 requisições em apenas 10 segundos no total. 
-
-O motivo pelo qual essa estratégia funciona é que há muito tempo morto no atendimento de uma solicitação web típica, tempo em que a thread está simplesmente esperando que a rede alcance a CPU — tempo que o escalonador de threads da VM pode utilizar para outras threads.
-
-No entanto, threads dependentes da CPU (ao contrário das threads dependentes de E/S, mais comuns em programas de rede) podem nunca chegar a um ponto em que precisem esperar por mais entradas.
-
-É possível que uma thread desse tipo deixe todas as outras threads sem energia, consumindo todos os recursos disponíveis da CPU. 
-Com um pouco de reflexão, você pode evitar esse problema. Aliás, a inanição é um problema consideravelmente mais fácil de evitar do que a sincronização incorreta ou o deadlock.
-
-###### Priorities
-
-Cada thread tem uma prioridade, especificada como um número inteiro de 0 a 10. Quando várias threads estão prontas para execução, a VM geralmente executa apenas a thread com a maior prioridade, embora isso não seja uma regra rígida. Em Java, 10 é a prioridade mais alta e 0, a mais baixa.
-
-A prioridade padrão é 5, e essa é a prioridade que suas threads terão, a menos que você as defina deliberadamente de outra forma.
-
-Podemos criar 3 constantes para isso:
-```java
-
-public static final int MIN_PRIORITY = 1;
-public static final int NORM_PRIORITY = 5;
-public static final int MAX_PRIORITY = 10;
-```
-
->Livro, pagina 103
->Nem todos os sistemas operacionais suportam 11 prioridades diferentes. Por exemplo, o Windows tem apenas 7. No Windows, as prioridades 1 e 2, 3 e 4, 6 e 7, e 8 e 9 são tratadas igualmente (por exemplo, uma thread com prioridade 9 não necessariamente substituirá uma thread com prioridade 8).
-
-É possivel definir a prioridade usando `setPriority(int priority)`.
-Tentar exceder a prioridade máxima ou definir uma prioridade não positiva gera uma `IllegalArgumentException`.
-
-O livro nos da um exemplo, usando a ideia anterior de callbacks:
+**Exemplo Completo**:
 
 ```java
+import java.net.InetAddress;
 
-public void calculateDigest() {
-	ListCallbackDigest cb = new ListCallbackDigest(filename);
-	cb.addDigestListener(this);
-	Thread t = new Thread(cb);
-	t.setPriority(8);
-	t.start();
+public class IPLookup {
+    public static void main(String[] args) throws Exception {
+        // Cria InetAddress sem DNS (apenas IP)
+        InetAddress ip = InetAddress.getByName("142.250.218.68");
+
+        System.out.println("IP: " + ip.getHostAddress()); // 142.250.218.68
+        System.out.println("Hostname inicial: " + ip.getHostName()); // 142.250.218.68
+
+        // Força busca reversa
+        String hostname = ip.getHostName();
+        System.out.println("Hostname resolvido: " + hostname); // ex: gru06s25-in-f4.1e100.net
+
+        // Teste de conectividade
+        System.out.println("Alcançável? " + ip.isReachable(1000)); // true/false
+    }
 }
 ```
 
-Em geral, porém, tente evitar usar uma prioridade muito alta para threads, porque você corre o risco de deixar outras threads de prioridade mais baixa sem uso.
 
-> Eu interresante esse caso. Se eu definir pioridades muitos baixas ou muitos altas a java vm pode deixar threads desamparadas.
+- **Prefira hostnames** em aplicações genéricas (são mais estáveis e legíveis).
+- **Use IPs diretamente** apenas quando necessário (ex.: redes internas, otimizações).
+- Lembre-se: `getByName()` com IP **não valida** a existência do host — isso só ocorre em operações posteriores (como `getHostName()` ou tentativas de conexão).
 
-##### Preemption
-
-A java vm tem uma agendador de threads que determina qual thread executa em um dado momento. Existem dois tipos principais de agendamento de threads: preemptivo e cooperativo.
-
-Um agendador de threads preemptivo determina quando uma thread teve sua cota justa de tempo de CPU, pausa essa thread e então passa o controle da CPU para uma thread diferente.
-
-Um agendador de threads cooperativo espera que a thread em execução pause a si mesma antes de passar o controle da CPU para uma thread diferente.
-
-Uma máquina virtual que usa agendamento de threads cooperativo é muito mais suscetível à inanição de threads do que uma máquina virtual que usa agendamento de threads preemptivo, porque uma thread de alta prioridade e não cooperativa pode monopolizar uma CPU inteira.
+> **Dica**: Para verificar a existência de um host, combine `InetAddress` com `isReachable()` ou tente uma conexão real (ex.: `Socket`).
 
 
-Todas as máquinas virtuais Java têm a garantia de usar o agendamento preemptivo de threads entre prioridades. 
-Ou seja, se uma thread de prioridade mais baixa estiver em execução quando uma thread de prioridade mais alta estiver pronta para ser executada, a máquina virtual, mais cedo ou mais tarde (e provavelmente mais cedo), pausará a thread de menor prioridade para permitir a execução da thread de maior prioridade.
+##### Security issues
 
-A thread de maior prioridade interrompe a thread de menor prioridade.
+A criação de objetos InetAddress a partir de nomes de host é considerada uma operação potencialmente insegura porque envolve consultas DNS. Isso representa riscos de segurança, especialmente para código não confiável como applets Java.
 
-A situação em que várias threads com a mesma prioridade estão prontas para execução é mais complicada. Um escalonador de threads preemptivo ocasionalmente pausa uma das threads para permitir que a próxima na fila tenha algum tempo de CPU.
+**Restrições para Código Não Confiável**
+- Só pode obter IPs:
+    - Do host de origem (codebase)
+    - Do localhost (retornando sempre 127.0.0.1)
+- Não pode:
+    - Fazer consultas DNS arbitrárias
+    - Descobrir o verdadeiro hostname/IP local
+- Permite criar InetAddress apenas a partir de strings IP (sem DNS)
 
-No entanto, um escalonador de threads cooperativo não o fará. Ele aguardará que a thread em execução ceda explicitamente o controle ou chegue a um ponto de parada.
+**Riscos de Consultas DNS Arbitrárias**  
+Podem ser usadas para criar canais ocultos de comunicação, onde:
+1. Dados são codificados em subdomínios (ex: "dados-secretos.ataque.com")
+2. O atacante monitora logs DNS para extrair informações
+3. Mesmo hosts inexistentes podem vazar dados via mensagens de erro
 
-Se o thread em execução nunca abrir mão do controle e nunca chegar a um ponto de parada, e se nenhum thread de prioridade mais alta tomar o lugar do thread em execução, todos os outros threads morrerão de fome. Isso é ruim.
+**Mecanismo de Proteção**
+- SecurityManager usa checkConnect():
+    - Porta -1: verifica permissão para resolução DNS
+    - Porta > -1: verifica permissão para conexão
+- Para código confiável, restrições podem ser relaxadas via:
+    - Assinatura digital
+    - Arquivos de política de segurança
 
-É importante garantir que todos os seus tópicos sejam pausados periodicamente para que outros tenham a oportunidade de serem executados.
+**Boas Práticas**
+- Código não confiável deve usar IPs literais quando possível
+- getLocalHost() em ambientes restritos retorna apenas localhost
+- Consultas DNS devem ser validadas e monitoradas
 
->Livro, pagina 104
->Um problema de inanição pode ser difícil de detectar se você estiver desenvolvendo em uma VM que usa agendamento preemptivo de threads. Só porque o problema não ocorre na sua máquina não significa que não ocorrerá nas máquinas dos seus clientes se as VMs deles usarem agendamento cooperativo de threads.
->A maioria das máquinas virtuais atuais usa agendamento de threads preemptivo, mas algumas máquinas virtuais mais antigas são agendadas cooperativamente, e você também pode encontrar agendamento cooperativo em máquinas virtuais Java de propósito especial, como em ambientes incorporados.
-
-Há 10 maneiras de uma thread pausar em favor de outras threads ou indicar que está pronta para pausar. São elas:
-
-- Pode ser bloqueado por transações de E/S (entrada/saída). / Blocking
-- Pode ser bloqueado ao acessar um objeto / sincronized(objeto)
-- Pode ceder (yield) uma vez para outra / Yielding
-- Pode dormir (sleep), ou seja, pausar sua execução /  Sleeping
-- Pode aguardar (join) outra thread / Joining threads
-- Pode esperar por um objeto  / Waiting on an object
-- Pode terminar sua execução.
-- Pode ser preempicionado por uam thread de prioridade mais alta
-- Pode ser suspenso.
-- Pode parar.
-
-As duas últimas possibilidades estão obsoletas porque podem deixar objetos em estados inconsistentes. Portanto, vamos analisar as outras oito maneiras pelas quais uma thread pode ser uma cidadã cooperativa da máquina virtual.
-
-###### Blocking 
+O Java implementa restrições rígidas para consultas DNS em código não confiável, prevenindo vazamento de informações e ataques via resolução de nomes.
+Essas proteções são fundamentais para segurança em ambientes como applets e aplicações sandboxed.
 
 
-**Blocking** ocorre quando uma thread precisa parar e esperar por um recurso que não está disponível.  
+##### Getter Methods
 
-Causas comuns de blocking:  
+A classe `InetAddress` possui quatro métodos principais para obtenção de informações:
 
-1. **I/O (Entrada/Saída):**  
-   - Threads frequentemente bloqueiam ao realizar operações de I/O (rede, disco), pois a CPU é muito mais rápida que esses dispositivos.  
-   - Exemplo: Uma thread esperando dados da rede pode bloquear por alguns milissegundos, permitindo que outras threads executem tarefas durante esse tempo.  
+1. **getHostName()**
+    - Retorna o nome do host associado ao endereço IP
+    - Se não conseguir resolver, retorna o IP no formato quad (ex: "192.168.1.1")
+    - Exemplo:
+      ```java
+      InetAddress local = InetAddress.getLocalHost();
+      System.out.println(local.getHostName()); // Nome do host ou IP
+      ```
 
-2. **Sincronização (Locks):**  
-   - Se uma thread tenta acessar um método/bloco **synchronized** e o lock já está com outra thread, ela bloqueia até que o lock seja liberado.  
-   - Se o lock nunca for liberado, a thread fica permanentemente parada.  
+2. **getCanonicalHostName()**
+    - Versão mais agressiva que sempre tenta resolver o nome canônico via DNS
+    - Útil quando se parte de um IP para descobrir o nome completo
+    - Exemplo:
+      ```java
+      InetAddress ia = InetAddress.getByName("8.8.8.8");
+      System.out.println(ia.getCanonicalHostName()); // dns.google
+      ```
 
-Observações importantes:  
+3. **getHostAddress()**
+    - Retorna o endereço IP no formato string (IPv4 ou IPv6)
+    - Exemplo:
+      ```java
+      System.out.println(InetAddress.getLocalHost().getHostAddress());
+      ```
 
-- **Locks mantidos durante blocking:**  
-  - Se uma thread bloqueia (por I/O ou espera por um lock), **ela não libera os locks que já possui**.  
-  - No caso de I/O, isso geralmente não é crítico, pois a thread eventualmente continua ou lança uma exceção (`IOException`), liberando os locks ao sair do bloco sincronizado.  
-- **Deadlock:**  
-  - Ocorre quando duas (ou mais) threads bloqueiam-se mutuamente, cada uma esperando por um lock que a outra possui.  
-  - Exemplo: Thread A tem Lock X e espera por Lock Y, enquanto Thread B tem Lock Y e espera por Lock X → ambas ficam paradas indefinidamente.  
+4. **getAddress()**
+    - Retorna o IP como array de bytes (ordem de rede)
+    - Requer tratamento especial pois bytes em Java são signed (-128 a 127)
+    - Conversão para valor unsigned:
+      ```java
+      byte[] address = ia.getAddress();
+      int unsignedByte = address[i] < 0 ? address[i] + 256 : address[i];
+      ```
 
-Blocking é essencial para gerenciar recursos, mas requer cuidado para evitar deadlocks e garantir que locks sejam liberados adequadamente.
+**Imutabilidade e Thread Safety**
 
-###### Yielding
+A classe é imutável (sem métodos setter), garantindo segurança em ambientes multi-thread.
 
-**Yielding** é quando uma thread **voluntariamente** cede seu tempo de CPU para outras threads, usando o método estático `Thread.yield()`.  
-- É uma **sugestão** para a JVM, que pode ser ignorada (especialmente em sistemas de tempo real).  
-- Não libera **locks** que a thread já possui.  
+**Identificação IPv4 vs IPv6**
 
-Quando usar?
-- Útil em loops infinitos para evitar monopolizar a CPU.  
-- Exemplo básico:  
-  ```java
-  public void run() {
-      while (true) {
-          // Trabalho da thread...
-          Thread.yield(); // Permite que outras threads executem
-      }
-  }
+Verifique o tamanho do array retornado por `getAddress()`:
+```java
+if (address.length == 4) {
+    System.out.println("IPv4");
+} else if (address.length == 16) {
+    System.out.println("IPv6");
+}
+```
+
+**Exemplo Prático**
+
+```java
+InetAddress google = InetAddress.getByName("www.google.com");
+System.out.println("Nome: " + google.getHostName());
+System.out.println("IP: " + google.getHostAddress());
+System.out.println("Bytes: " + Arrays.toString(google.getAddress()));
+```
+
+Estes métodos fornecem diferentes níveis de acesso às informações de rede, balanceando entre desempenho (cache) e atualização (consultas DNS).
+
+
+##### Address Types
+
+
+A classe `InetAddress` em Java fornece métodos para identificar tipos específicos de endereços IP:
+
+###### **Métodos de Verificação**
+
+1. `isAnyLocalAddress()`
+    - Verifica se é um endereço **wildcard**(0.0.0.0 em IPv4 ou \:\: em - IPv6)
+    - , que representa qualquer interface local.
+
+2. **`isLoopbackAddress()`**
+    - Identifica endereços de **loopback** (127.0.0.1 em IPv4 ou \:\:1 em IPv6), usados para comunicação interna na máquina.
+
+3. **`isLinkLocalAddress()`**
+    - Retorna `true` para endereços IPv6 **link-local** (iniciam com FE80\:\:), usados em redes locais sem roteamento externo.
+
+4. **`isSiteLocalAddress()`**
+    - Detecta endereços IPv6 **site-local** (iniciam com FEC0\:\:), restritos a uma rede corporativa/campus.
+
+5. **`isMulticastAddress()`**
+    - Verifica se é um endereço **multicast** (224.0.0.0 a 239.255.255.255 em IPv4 ou FF00\:\:/8 em IPv6), para envio a múltiplos hosts.
+
+###### **Subtipos de Multicast**
+- `isMCGlobal()`: Escopo global (ex.: FF0E\:\: em IPv6).
+- `isMCOrgLocal()`: Restrito a uma organização (ex.: FF08\:\: ).
+- `isMCSiteLocal()`: Limitado a um site (ex.: FF05\:\:).
+- `isMCLinkLocal()`: Apenas na sub-rede local (ex.: FF02\:\:).
+- `isMCNodeLocal()`: Restrito à interface de rede (ex.: FF01\:\:).
+
+###### **Exemplo Prático**
+
+O programa abaixo testa as características de um endereço IP:
+```java
+InetAddress address = InetAddress.getByName("224.0.2.1");
+if (address.isMulticastAddress()) {
+    System.out.println("É multicast!");
+    if (address.isMCGlobal()) {
+        System.out.println("Escopo global");
+    }
+}
+```
+
+###### **Saídas Típicas**
+- **Loopback**:
   ```
-- Se o loop for demorado, pode-se adicionar mais chamadas a `yield()` para melhorar a responsividade.  
+  /127.0.0.1 is loopback address.
+  ```
+- **Site-local (IPv4 privado)**:
+  ```
+  /192.168.1.1 is a site-local address.
+  ```
+- **Multicast global**:
+  ```
+  /224.0.2.1 is a global multicast address.
+  ```
 
-Cuidados importantes:
-1. **Estado consistente:**  
-   - Antes de chamar `yield()`, a thread deve garantir que seus dados estejam em um estado seguro para uso por outras threads.  
+###### **Implicações**
 
-2. **Problemas com locks:**  
-   - Se a thread que faz `yield()` possui **locks sincronizados**, outras threads que dependam desses recursos **não poderão executar**, anulando o propósito do `yield()`.  
-   - **Ideal:** Evite chamar `yield()` dentro de blocos `synchronized`.  
+- **Segurança**: Endereços locais (link/site) não são roteados externamente.
+- **Redes IPv6**: Autoconfiguração via `FE80::` (link-local) é comum.
+- **Debug**: Loopback evita dependência de hardware de rede.
 
- Eficácia:
-- Só beneficia threads de **mesma prioridade**.  
-- Se não houver threads prontas para executar, a JVM pode retornar o controle à própria thread que fez o `yield()`.  
+Use esses métodos para validar endereços em aplicações de rede, garantindo comportamentos esperados (ex.: evitar roteamento de tráfego local para a internet).
 
-
-`Thread.yield()` é uma ferramenta simples para **melhorar a cooperação entre threads**, mas deve ser usada com cautela para evitar problemas de concorrência. Em muitos casos, técnicas como `wait()`/`notify()` ou estruturas de alto nível (ex: `ExecutorService`) são mais eficientes.
-
-
-###### Sleeping
-
-**Sleeping** é uma forma mais forte de pausar uma thread do que `yield()`.  
-
-- Enquanto `yield()` sugere que a thread **cede a CPU para threads de mesma prioridade**, `sleep()` **pausa a thread por um tempo definido**, permitindo que **qualquer outra thread** (mesmo de prioridade menor) execute.  
-
-- **A thread em sleep mantém todos os locks** que possui, o que pode bloquear outras threads que precisem deles.  
+##### Testing Reachability
 
 
+A classe `InetAddress` em Java oferece métodos para verificar se um host está acessível na rede:
 
-**Como usar Thread.sleep()**:
+###### **Métodos Disponíveis**
+1. **`isReachable(int timeout)`**
+    - Verifica se o host responde dentro de um tempo limite (`timeout` em milissegundos).
+    - Usa **ICMP Echo Request** (similar ao comando `ping`).
+    - Retorna `true` se o host estiver alcançável, `false` caso contrário.
+    - Lança `IOException` em erros de rede.
 
-Dois métodos estáticos:  
-
-```java
-public static void sleep(long milliseconds) throws InterruptedException  
-public static void sleep(long milliseconds, int nanoseconds) throws InterruptedException  
-```  
-- **Precisão limitada:** A maioria das JVMs não garante precisão em nanossegundos (ou mesmo milissegundos).  
-- Se o hardware não suportar, o tempo é **arredondado** para o valor mais próximo possível.  
-
-**Exemplo:** Uma thread que verifica uma página a cada 5 minutos:  
-```java
-public void run() {
-    while (true) {
-        if (!getPage("http://www.example.com/")) {
-            notifyAdmin("admin@example.com");
-        }
-        try {
-            Thread.sleep(300_000); // 5 minutos (300.000 ms)
-        } catch (InterruptedException ex) {
-            break; // Se interrompida, sai do loop
-        }
-    }
-}
-```  
-
-
-**Problemas e Cuidados**: 
-
-1. Sleep não garante tempo exato
-   - A thread pode **dormir mais** do que o solicitado devido a atrasos no agendamento.  
-1. Interrupção (`InterruptedException`) 
-   - Outras threads podem **acordar** uma thread dormindo chamando `thread.interrupt()`.  
-   - Isso lança `InterruptedException`, permitindo que a thread reaja (ex.: terminar limparmente).  
-1. Evite sleep em blocos `synchronized`  
-   - Como locks **não são liberados**, pode causar **deadlocks** se outras threads precisarem deles.  
-
-**Sleep vs. I/O Blocking**:
-
-- Se uma thread está bloqueada em **I/O** (ex.: `read()`, `write()`), chamar `interrupt()` **pode não funcionar** (depende do SO).  
-  - Em **Solaris**, pode lançar `InterruptedIOException`, mas em outros sistemas, muitas vezes **não faz nada**.  
-- **Alternativa melhor:** Usar **NIO (Non-Blocking I/O)** (Canais e Buffers), que suportam interrupção corretamente.  
-
-No caso:
-- `Thread.sleep()` é útil para **pausas programadas**, mas deve ser usado com cuidado:  
-  - **Não use em blocos sincronizados** (risco de deadlock).  
-  - **Trate `InterruptedException`** para permitir terminação graciosa.  
-  - **Para I/O bloqueante, prefira NIO** se a interrupção for necessária.  
-- Se o objetivo é **esperar por eventos**, mecanismos como `wait()`/`notify()` ou `Lock/Condition` são geralmente melhores.
-
-
-###### Joining threads
-
-
-**`join()`** permite que uma thread espere até que outra thread termine sua execução.  
-
-- Útil quando uma thread depende do resultado de outra (ex.: processamento paralelo com consolidação final).  
-- Existem três variações:  
-  ```java
-  void join()                          // Espera indefinidamente  
-  void join(long milliseconds)         // Espera por um tempo máximo  
-  void join(long ms, int nanoseconds)  // Espera com precisão de ns (não garantida)  
-  ```  
-
-**Como Funciona?**  
-1. **Thread A** chama **`threadB.join()`** → **Thread A pausa** até que **Thread B** termine.  
-2. Se **Thread B já terminou**, `join()` retorna imediatamente.  
-3. Se **Thread A for interrompida** durante a espera, lança `InterruptedException`.  
-
-**Exemplo:** Ordenação paralela com espera explícita  
-```java
-double[] array = new double[10000];  
-for (int i = 0; i < array.length; i++) {  
-    array[i] = Math.random();  
-}  
-
-SortThread t = new SortThread(array);  
-t.start();  
-
-try {  
-    t.join(); // Espera a thread de ordenação terminar  
-    System.out.println("Mínimo: " + array[0]);  
-    System.out.println("Mediana: " + array[array.length/2]);  
-    System.out.println("Máximo: " + array[array.length-1]);  
-} catch (InterruptedException ex) {  
-    System.err.println("Ordenação interrompida!");  
-}  
-```  
-
-
-**Cuidados Importantes**  
-1. **Ordem de Join**  
-   - Se múltiplas threads são "joined" em sequência, a thread principal **espera na ordem chamada**.  
-   - Isso pode atrasar o processamento se uma thread lenta bloquear as demais.  
-
-2. **Interrupção**  
-   - Se a thread que espera (`join()`) for interrompida (`interrupt()`), ela para de esperar e trata a exceção.  
-
-3. **Alternativas Modernas (Java 5+)**  
-   - **`ExecutorService` + `Future`** são preferíveis para tarefas assíncronas:  
-     ```java
-     ExecutorService executor = Executors.newFixedThreadPool(2);  
-     Future<Resultado> futuro = executor.submit(() -> tarefaDemorada());  
-     Resultado r = futuro.get(); // Equivalente a join(), mas com mais controle  
-     ```  
-   - **Vantagens:**  
-     - Permite timeouts (`get(long timeout, TimeUnit unit)`).  
-     - Suporte a cancelamento (`future.cancel()`).  
-
-**Exemplo Prático (Consertando Race Conditions)**  
- 
-**Problema:** Uma thread principal tenta acessar resultados antes das threads filhas terminarem.  
-
-**Solução:** Usar `join()` para sincronizar:  
-```java
-public class JoinDigestUserInterface {  
-    public static void main(String[] args) {  
-        ReturnDigest[] threads = new ReturnDigest[args.length];  
-
-        for (int i = 0; i < args.length; i++) {  
-            threads[i] = new ReturnDigest(args[i]);  
-            threads[i].start();  
-        }  
-
-        for (int i = 0; i < args.length; i++) {  
-            try {  
-                threads[i].join(); // Espera cada thread terminar  
-                String hash = DatatypeConverter.printHexBinary(threads[i].getDigest());  
-                System.out.println(args[i] + ": " + hash);  
-            } catch (InterruptedException ex) {  
-                System.err.println("Thread interrompida!");  
-            }  
-        }  
-    }  
-}  
-```  
-
-
-**`join()`** é essencial para sincronização simples entre threads, mas tem limitações:  
-  - **Espera bloqueante** (pode ser ineficiente).  
-  - **Ordem rígida** (pode não ser ideal para tarefas heterogêneas).  
-
-**Para sistemas complexos**, prefira:  
-  - **`Future` + `ExecutorService`** (Java 5+).  
-  - **Frameworks como CompletableFuture** (Java 8+).  
-
-**Regra geral:** Use `join()` para sincronização básica; para cenários avançados, opte por APIs modernas.
-
-
-
-###### Waiting on an object
-
- Um mecanismo de **sincronização** onde uma thread **pausa** sua execução até que uma **condição** seja atendida.  
-- Diferente de `join()` (que espera uma thread terminar), `wait()` espera um **estado específico de um objeto**.  
-- A thread **libera o lock** do objeto enquanto espera, permitindo que outras threads o modifiquem.  
-
-Uso:
-
-1. **Sincronização:**  
-   - A thread deve obter o **lock do objeto** (usando `synchronized`) antes de chamar `wait()`.  
+   **Exemplo:**
    ```java
-   synchronized (objeto) {
-       objeto.wait(); // Libera o lock e pausa
-   }
-   ```  
+   InetAddress host = InetAddress.getByName("example.com");
+   boolean reachable = host.isReachable(5000); // 5 segundos de timeout
+   System.out.println("Alcançável? " + reachable);
+   ```
 
-2. **Retorno da Espera:**  
-   A thread acorda quando ocorre:  
-   - **Timeout** (se usado `wait(ms)`).  
-   - **Notificação** (`notify()` ou `notifyAll()`).  
-   - **Interrupção** (`InterruptedException`).  
+2. **`isReachable(NetworkInterface interface, int ttl, int timeout)`**
+    - Permite especificar:
+        - **`interface`**: A placa de rede local a ser usada (útil em máquinas com múltiplas interfaces).
+        - **`ttl`** (Time-To-Live): Número máximo de saltos (hops) antes do pacote ser descartado.
+    - Mais preciso para redes complexas ou multihomed.
 
-3. **Notificação:**  
-   - Outra thread deve chamar `objeto.notify()` (para acordar **uma** thread) ou `notifyAll()` (para **todas**).  
-   - A thread notificada **tenta readquirir o lock** antes de continuar.  
-
-
-**Exemplo Prático**:  
-
-**Cenário:** Uma thread lê um arquivo JAR e notifica outra thread quando o manifesto está pronto.  
-```java
-// Thread que espera o manifesto
-ManifestFile m = new ManifestFile();
-JarThread t = new JarThread(m, inputStream);
-
-synchronized (m) {
-    t.start();
-    m.wait(); // Espera até ser notificada
-    // Processa o manifesto...
-}
-
-// Thread que lê o JAR
-public void run() {
-    synchronized (theManifest) {
-        // Lê o manifesto do stream...
-        theManifest.notify(); // Notifica a thread esperando
-    }
-    // Lê o resto do arquivo...
-}
-```  
-
-
-**Padrão Comum: Loop de Espera**:
-
-- Como `wait()` pode acordar **espontaneamente** (sem notificação), sempre verifique a condição em um **loop**:  
-```java
-synchronized (lista) {
-    while (lista.isEmpty()) { // Enquanto a condição não for atendida
-        lista.wait(); // Libera o lock e espera
-    }
-    // Processa o recurso...
-}
-```  
-
-
-**Exemplo:** Várias threads processando entradas de um log:  
-```java
-// Thread consumidora
-synchronized (entries) {
-    while (entries.isEmpty()) {
-        entries.wait(); // Espera até ter entradas
-    }
-    String entry = entries.remove(0);
-    // Processa a entrada...
-}
-
-// Thread produtora (adiciona entradas)
-synchronized (entries) {
-    entries.add(entry);
-    entries.notifyAll(); // Acorda todas as threads esperando
-}
-```  
-
-
-**Cuidados Importantes**:  
-1. **Sempre sincronize no mesmo objeto** usado para `wait()`/`notify()`.  
-2. **Prefira `notifyAll()`** quando múltiplas threads podem estar esperando.  
-   - `notify()` seleciona **apenas uma** thread (aleatoriamente), podendo causar **starvation**.  
-3. **Interrupção:**  
-   - Se uma thread em `wait()` for interrompida (`interrupt()`), ela lança `InterruptedException` e deve tratar a saída adequadamente.  
-4. **Condição de corrida:**  
-   - Sem o loop, uma thread pode acordar **antes da condição ser verdadeira** (problema conhecido como *spurious wakeup*).  
-
-
-**Alternativas Modernas**:
-- **`java.util.concurrent`** oferece classes mais robustas para espera/notificação:  
-  - **`Lock` + `Condition`**: Substitui `synchronized`/`wait()`/`notify()` com maior flexibilidade.  
-  - **Filas bloqueantes** (`BlockingQueue`): Ideal para padrões produtor-consumidor.  
-
-
-`wait()`/`notify()` são ferramentas poderosas para **coordenação entre threads**, mas exigem cuidado para evitar deadlocks e condições de corrida.  
-- **Regras de ouro:**  
-  1. **Sempre use em blocos `synchronized`**.  
-  2. **Sempre espere em um loop** que verifica a condição.  
-  3. **Prefira `notifyAll()` a `notify()`**.  
-- Para cenários complexos, considere usar **`java.util.concurrent`** em vez de sincronização manual.
-
-
-##### Thread Pools and Executors
-
-
-
- **Problema com Threads Individuais**  
-- Criar e destruir threads manualmente tem **overhead significativo** (CPU/memória).  
-- Muitas threads concorrentes podem **sobrecarregar o sistema**, especialmente em operações CPU-bound.  
-
-**Solução: Thread Pools**  
-- **Gerenciam um conjunto fixo de threads** que reutilizam tarefas, evitando custos de criação/destruição.  
-- Controlam o **número máximo de threads ativas**, otimizando o uso de recursos.  
+   **Exemplo:**
+   ```java
+   NetworkInterface eth = NetworkInterface.getByName("eth0");
+   boolean reachable = host.isReachable(eth, 64, 3000); // TTL=64, timeout=3s
+   ```
 
 ---
 
-**Como Usar `Executors` em Java**  
+###### **Casos de Uso**
+- **Verificar disponibilidade de servidores** antes de conectar.
+- **Diagnóstico de redes**: Identificar se falhas são devido a firewalls, roteadores ou hosts offline.
+- **Balanceamento de carga**: Testar qual rota/interface tem melhor resposta.
 
-A classe `java.util.concurrent.Executors` oferece fábricas para criar pools de threads:  
+---
 
-**1. Pool Fixo (`newFixedThreadPool`)**  
-- Número fixo de threads.  
-- Exemplo: Comprimir arquivos em paralelo (4 threads):  
-  ```java
-  ExecutorService pool = Executors.newFixedThreadPool(4);  
-  for (File file : files) {  
-      pool.submit(new GZipRunnable(file)); // Submete tarefas ao pool  
-  }  
-  pool.shutdown(); // Encerra após conclusão das tarefas  
-  ```  
-
-**2. Pool Dinâmico (`newCachedThreadPool`)**  
-- Cria threads sob demanda e reutiliza threads ociosas.  
-- Ideal para tarefas curtas e muitas.  
-
-**3. Agendamento (`newScheduledThreadPool`)**  
-- Executa tarefas periódicas ou com atraso.  
+###### **Limitações**
+- **Firewalls/ICMP bloqueado**: Muitas redes bloqueiam pacotes ICMP, fazendo o método retornar `false` mesmo para hosts ativos.
+- **TTL**: Um valor baixo pode não alcançar hosts distantes.
+- **IPv6**: Requer configurações específicas em algumas redes.
 
 
-**Exemplo Prático: Compactação de Arquivos**  
-
-**Classe `GZipRunnable` (Tarefa Individual)**  
+###### **Exemplo Completo**
 ```java
-public class GZipRunnable implements Runnable {  
-    private final File input;  
+import java.net.*;
+import java.io.IOException;
 
-    public void run() {  
-        if (!input.getName().endsWith(".gz")) {  
-            File output = new File(input.getParent(), input.getName() + ".gz");  
-            try (InputStream in = new BufferedInputStream(new FileInputStream(input));  
-                 OutputStream out = new BufferedOutputStream(  
-                     new GZIPOutputStream(new FileOutputStream(output)))) {  
-                int b;  
-                while ((b = in.read()) != -1) out.write(b);  
-            } catch (IOException ex) {  
-                System.err.println(ex);  
-            }  
-        }  
-    }  
-}  
-```  
+public class TestReachability {
+    public static void main(String[] args) {
+        try {
+            InetAddress google = InetAddress.getByName("google.com");
+            boolean reachable = google.isReachable(3000); // Timeout de 3s
+            System.out.println("Google está alcançável? " + reachable);
+        } catch (IOException e) {
+            System.err.println("Erro de rede: " + e.getMessage());
+        }
+    }
+}
+```
 
-**Classe Principal (`GZipAllFiles`)**  
+**Saída:**
+```
+Google está alcançável? true
+```
+
+
+###### **Alternativas**
+
+Se `isReachable()` não for confiável (devido a bloqueios de ICMP), considere:
+- **Conexões TCP** (ex.: `Socket` na porta 80).
+- **Bibliotecas externas** como Apache Commons Net (`ping` customizado).
+
+Use esses métodos para validar conectividade em aplicações críticas, mas sempre com tratamento de erros e fallbacks.
+
+
+##### Object Methods
+
+A classe `InetAddress` sobrescreve três métodos fundamentais de `Object` para fornecer comportamentos específicos:
+
+###### **1. `equals(Object o)`**
+- **Comparação por endereço IP**: Dois objetos `InetAddress` são considerados iguais se:
+    - Ambos são instâncias de `InetAddress`.
+    - Possuem o **mesmo endereço IP** (ignorando o hostname).
+- **Exemplo**:
+  ```java
+  InetAddress ibiblio = InetAddress.getByName("www.ibiblio.org");
+  InetAddress helios = InetAddress.getByName("helios.ibiblio.org");
+  System.out.println(ibiblio.equals(helios)); // true (mesmo IP)
+  ```
+
+###### **2. `hashCode()`**
+- **Baseado no IP**: O código hash é calculado apenas a partir do endereço IP, não do hostname.
+- **Consistência com `equals()`**: Objetos com o mesmo IP retornam o mesmo hash code.
+  ```java
+  System.out.println(ibiblio.hashCode() == helios.hashCode()); // true
+  ```
+
+###### **3. `toString()`**
+- **Formato padrão**: Retorna uma string no formato `hostname/IP`.
+    - Se o hostname não existir (Java 1.4+): `"/IP"` (hostname vazio).
+    - Exemplo:
+      ```java
+      System.out.println(InetAddress.getByName("8.8.8.8")); // "/8.8.8.8"
+      System.out.println(InetAddress.getByName("google.com")); // "google.com/142.250.218.46"
+      ```
+
+###### **Exemplo Completo**
 
 ```java
-public class GZipAllFiles {  
-    public static void main(String[] args) {  
-        ExecutorService pool = Executors.newFixedThreadPool(4);  
-        for (String filename : args) {  
-            File f = new File(filename);  
-            if (f.isDirectory()) {  
-                for (File file : f.listFiles()) {  
-                    if (!file.isDirectory()) {  
-                        pool.submit(new GZipRunnable(file));  
-                    }  
-                }  
-            } else {  
-                pool.submit(new GZipRunnable(f));  
-            }  
-        }  
-        pool.shutdown(); // Não aceita novas tarefas, mas finaliza as existentes  
-    }  
-}  
-```  
+import java.net.*;
 
+public class ExemploInetAddress {
+    public static void main(String[] args) throws UnknownHostException {
+        InetAddress host1 = InetAddress.getByName("www.google.com");
+        InetAddress host2 = InetAddress.getByName("142.250.218.46");
 
-**Gerenciamento do Pool**:  
-- **`shutdown()`**:  
-  - Encerra o pool após conclusão das tarefas pendentes.  
-- **`shutdownNow()`**:  
-  - Interrompe tarefas em execução e descarta as pendentes.  
-  - Útil em servidores que precisam parar abruptamente.  
+        // equals()
+        System.out.println("Mesmo IP? " + host1.equals(host2)); // true
 
- **Vantagens dos Thread Pools**:  
- 
-1. **Controle de recursos**: Limita threads ativas, evitando sobrecarga.  
-2. **Reutilização**: Threads são reaproveitadas para múltiplas tarefas.  
-3. **Escalabilidade**: Melhor desempenho em tarefas I/O-bound (ex.: redes, arquivos).  
+        // hashCode()
+        System.out.println("Hash codes iguais? " + (host1.hashCode() == host2.hashCode())); // true
 
+        // toString()
+        System.out.println("Host1: " + host1); // www.google.com/142.250.218.46
+        System.out.println("Host2: " + host2); // /142.250.218.46
+    }
+}
+```
 
-**Alternativas Avançadas**: 
-- **`Future` e `Callable`**: Para tarefas que retornam resultados ou podem falhar.  
+###### **Casos de Uso Práticos**
+
+1. **Comparação de hosts**:  
+   Verificar se dois nomes (ex.: `www.site.com` e `cdn.site.com`) apontam para o mesmo servidor.
+2. **Tabelas hash**:  
+   Usar `InetAddress` como chave em `HashMap` (funciona porque `hashCode()` é baseado no IP).
+3. **Logs**:  
+   `toString()` facilita a exibição de informações de conexão em logs.
+
+###### **Observações Importantes**
+
+- **Hostnames diferentes, mesmo IP**:
   ```java
-  Future<Result> future = pool.submit(new Callable<Result>() {  
-      public Result call() throws Exception {  
-          return processData();  
-      }  
-  });  
-  Result r = future.get(); // Bloqueia até a conclusão  
+  InetAddress a = InetAddress.getByName("site.com");
+  InetAddress b = InetAddress.getByName("198.51.100.42");
+  System.out.println(a.equals(b)); // true (se o IP for o mesmo)
+  ```
+- **IPv6**: Os métodos funcionam da mesma forma para endereços IPv6.
+
+Esses métodos garantem que `InetAddress` seja consistente com o contrato básico de `Object`, enquanto adicionam semântica específica para endereços de rede.
+
+#### The NetworkInterface Class
+
+A classe `InetAddress` sobrescreve três métodos fundamentais de `Object` para fornecer comportamentos específicos:
+
+##### **1. `equals(Object o)`**
+- **Comparação por endereço IP**: Dois objetos `InetAddress` são considerados iguais se:
+    - Ambos são instâncias de `InetAddress`.
+    - Possuem o **mesmo endereço IP** (ignorando o hostname).
+- **Exemplo**:
+  ```java
+  InetAddress ibiblio = InetAddress.getByName("www.ibiblio.org");
+  InetAddress helios = InetAddress.getByName("helios.ibiblio.org");
+  System.out.println(ibiblio.equals(helios)); // true (mesmo IP)
+  ```
+
+##### **2. `hashCode()`**
+- **Baseado no IP**: O código hash é calculado apenas a partir do endereço IP, não do hostname.
+- **Consistência com `equals()`**: Objetos com o mesmo IP retornam o mesmo hash code.
+  ```java
+  System.out.println(ibiblio.hashCode() == helios.hashCode()); // true
+  ```
+
+##### **3. `toString()`**
+- **Formato padrão**: Retorna uma string no formato `hostname/IP`.
+    - Se o hostname não existir (Java 1.4+): `"/IP"` (hostname vazio).
+    - Exemplo:
+      ```java
+      System.out.println(InetAddress.getByName("8.8.8.8")); // "/8.8.8.8"
+      System.out.println(InetAddress.getByName("google.com")); // "google.com/142.250.218.46"
+      ```
+
+**Exemplo Completo**
+
+```java
+import java.net.*;
+
+public class ExemploInetAddress {
+    public static void main(String[] args) throws UnknownHostException {
+        InetAddress host1 = InetAddress.getByName("www.google.com");
+        InetAddress host2 = InetAddress.getByName("142.250.218.46");
+
+        // equals()
+        System.out.println("Mesmo IP? " + host1.equals(host2)); // true
+
+        // hashCode()
+        System.out.println("Hash codes iguais? " + (host1.hashCode() == host2.hashCode())); // true
+
+        // toString()
+        System.out.println("Host1: " + host1); // www.google.com/142.250.218.46
+        System.out.println("Host2: " + host2); // /142.250.218.46
+    }
+}
+```
+
+
+##### **Casos de Uso Práticos**
+1. **Comparação de hosts**:  
+   Verificar se dois nomes (ex.: `www.site.com` e `cdn.site.com`) apontam para o mesmo servidor.
+2. **Tabelas hash**:  
+   Usar `InetAddress` como chave em `HashMap` (funciona porque `hashCode()` é baseado no IP).
+3. **Logs**:  
+   `toString()` facilita a exibição de informações de conexão em logs.
+
+**Observações Importantes**
+
+- **Hostnames diferentes, mesmo IP**:
+  ```java
+  InetAddress a = InetAddress.getByName("site.com");
+  InetAddress b = InetAddress.getByName("198.51.100.42");
+  System.out.println(a.equals(b)); // true (se o IP for o mesmo)
+  ```
+- **IPv6**: Os métodos funcionam da mesma forma para endereços IPv6.
+
+Esses métodos garantem que `InetAddress` seja consistente com o contrato básico de `Object`, enquanto adicionam semântica específica para endereços de rede.
+
+
+##### Inet4Address and Inet6Address
+
+A classe `NetworkInterface` em Java representa uma **interface de rede local**, que pode ser:
+- **Física** (ex.: placa de Ethernet, Wi-Fi)
+- **Virtual** (ex.: endereços IP adicionais vinculados ao mesmo hardware)
+
+Ela permite enumerar e manipular todos os endereços IP locais, independentemente da interface.
+
+###### **Principais Métodos de Fábrica**
+
+São usados para obter objetos `NetworkInterface`:
+
+###### **1. `getByName(String name)`**
+
+- Retorna a interface pelo nome (ex.: `"eth0"` no Linux, `"CE31"` no Windows).
+- Retorna `null` se a interface não existir.
+- Pode lançar `SocketException` em erros de rede.
+
+**Exemplo (Unix/Linux):**
+```java
+try {
+    NetworkInterface ni = NetworkInterface.getByName("eth0");
+    if (ni == null) {
+        System.err.println("Interface eth0 não encontrada.");
+    }
+} catch (SocketException ex) {
+    System.err.println("Erro ao acessar interfaces.");
+}
+```
+
+###### **2. `getByInetAddress(InetAddress address)`**
+
+- Retorna a interface associada a um endereço IP específico.
+- Útil para verificar qual interface está vinculada a um IP local.
+
+**Exemplo (Loopback):**
+```java
+try {
+    InetAddress loopback = InetAddress.getByName("127.0.0.1");
+    NetworkInterface ni = NetworkInterface.getByInetAddress(loopback);
+    if (ni == null) {
+        System.err.println("Loopback não configurado!");
+    }
+} catch (SocketException | UnknownHostException ex) {
+    System.err.println("Erro: " + ex.getMessage());
+}
+```
+
+###### **3. `getNetworkInterfaces()`**
+- Retorna uma **enumeração** (`Enumeration`) de todas as interfaces do sistema.
+- Ideal para listar interfaces ativas.
+
+**Exemplo (Listar Todas as Interfaces):**
+```java
+Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+while (interfaces.hasMoreElements()) {
+    NetworkInterface ni = interfaces.nextElement();
+    System.out.println(ni.getName() + " - " + Collections.list(ni.getInetAddresses()));
+}
+```
+
+**Saída Típica (Linux):**
+```
+eth0 - [/192.168.1.100]
+lo - [/127.0.0.1]
+wlan0 - [/10.0.0.15]
+```
+
+###### **Casos de Uso Comuns**
+1. **Identificar Interfaces de Rede**:
+    - Descobrir quantas placas de rede estão ativas.
+2. **Vincular Sockets a Interfaces Específicas**:
+    - Útil para servidores com múltiplos IPs.
+3. **Diagnóstico de Rede**:
+    - Verificar se um IP está configurado corretamente em uma interface.
+
+###### **Detalhes Importantes**
+
+- **Nomes de Interfaces**:
+    - **Unix/Linux**: `eth0`, `wlan0`, `lo` (loopback).
+    - **Windows**: Nomes baseados no hardware (ex.: `"Realtek PCIe GbE Family Controller"`).
+- **Endereços IP por Interface**:
+    - Use `ni.getInetAddresses()` para listar os IPs de uma interface.
+- **Imutabilidade**:
+    - Os objetos `NetworkInterface` são imutáveis e seguros para threads.
+
+###### **Exemplo Completo**
+
+```java
+import java.net.*;
+import java.util.*;
+
+public class ListInterfaces {
+    public static void main(String[] args) throws SocketException {
+        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+        while (interfaces.hasMoreElements()) {
+            NetworkInterface ni = interfaces.nextElement();
+            System.out.println("Interface: " + ni.getName());
+            System.out.println("  Endereços: " + Collections.list(ni.getInetAddresses()));
+        }
+    }
+}
+```
+
+###### **Conclusão**
+A classe `NetworkInterface` é essencial para:
+- Gerenciar **múltiplos IPs** em um mesmo host.
+- Diagnosticar problemas de rede.
+- Criar aplicações que dependem de interfaces específicas (ex.: servidores multi-homed).
+
+Use os métodos de fábrica para acessar interfaces de forma segura e eficiente!
+
+#### Getter Methods
+
+A classe `NetworkInterface` fornece métodos para obter informações sobre interfaces de rede locais. Após obter um objeto `NetworkInterface`, você pode acessar:
+
+##### **1. `getInetAddresses()`**
+- Retorna uma **enumeração** (`Enumeration<InetAddress>`) com todos os endereços IP vinculados à interface.
+- Útil para interfaces com múltiplos IPs (ex.: configurações IPv4 + IPv6).
+
+**Exemplo:**
+```java
+NetworkInterface eth0 = NetworkInterface.getByName("eth0");
+Enumeration<InetAddress> addresses = eth0.getInetAddresses();
+while (addresses.hasMoreElements()) {
+    System.out.println("IP: " + addresses.nextElement());
+}
+```
+**Saída:**
+```
+IP: /192.168.1.100
+IP: /fe80:0:0:0:1a2b:3c4d:5e6f:7a8b%eth0
+```
+
+##### **2. `getName()`**
+- Retorna o **nome técnico** da interface (ex.: `"eth0"` no Linux, `"wlan0"` para Wi-Fi).
+
+**Exemplo:**
+```java
+System.out.println("Nome da interface: " + eth0.getName()); // eth0
+```
+
+##### **3. `getDisplayName()`**
+- Retorna um **nome amigável** (depende do sistema operacional):
+    - **Linux/Unix**: Geralmente igual a `getName()` (ex.: `"eth0"`).
+    - **Windows**: Nomes descritivos como `"Conexão Local"` ou `"Wi-Fi"`.
+
+**Exemplo:**
+```java
+System.out.println("Nome amigável: " + eth0.getDisplayName()); 
+```
+**Saída no Windows:**
+```
+Nome amigável: Conexão Local
+```
+
+##### **Casos de Uso**
+
+- **Listar IPs de uma interface**:
+  ```java
+  Collections.list(eth0.getInetAddresses()).forEach(System.out::println);
+  ```
+- **Identificar interfaces ativas**:
+  ```java
+  NetworkInterface.getNetworkInterfaces()
+      .forEachRemaining(ni -> System.out.println(ni.getName()));
+  ```
+
+##### **Observações**
+- **Múltiplos IPs**: Uma única interface pode ter vários endereços (IPv4 + IPv6 + aliases).
+- **Nomes amigáveis**: `getDisplayName()` pode não ser tão "amigável" em sistemas Unix.
+- **Segurança**: Os objetos são imutáveis e seguros para uso em múltiplas threads.
+
+Use esses métodos para diagnosticar redes ou vincular conexões a interfaces específicas!
+
+
+#### Some Useful Programs
+
+Nesse trecho e encinado usar um ferramenta de consulta anti spam, mas ao oque me parece essa ferramenta não existe mais, oque encontrei na minha busca foi: https://check.spamhaus.org/results?query=
+
+##### **1. Verificação de Spam (`SpamCheck`)**
+- **Objetivo**: Identificar se um IP está em listas de spammers (como `sbl.spamhaus.org`).
+- **Como funciona**:
+    1. Inverte o IP (ex.: `207.87.34.17` → `17.34.87.207`).
+    2. Concatena com o domínio da lista negra (ex.: `17.34.87.207.sbl.spamhaus.org`).
+    3. Se a consulta DNS retornar `127.0.0.2`, o IP é um spammer.
+- **Exemplo**:
+  ```java
+  boolean isSpammer = InetAddress.getByName("17.34.87.207.sbl.spamhaus.org") != null;
+  ```
+- **Cuidados**:
+    - Servidores de lista negra podem mudar de endereço ou sofrer ataques DDoS.
+    - Algumas listas usam `127.0.0.1` em vez de `127.0.0.2`.
+
+---
+
+##### **2. Processamento de Logs de Servidor Web (`Weblog` e `PooledWeblog`)**
+- **Problema**: Logs de servidores web armazenam IPs, mas hostnames são mais úteis para análise.
+- **Solução**:
+    - **Versão sequencial (`Weblog`)**:
+        - Lê o arquivo de log linha por linha.
+        - Extrai o IP (tudo antes do primeiro espaço).
+        - Usa `InetAddress.getByName(ip).getHostName()` para resolver o hostname.
+        - **Desvantagem**: Lento devido a consultas DNS sequenciais.
+
+    - **Versão paralela (`PooledWeblog`)**:
+        - Usa um **pool de threads** (ex.: 4 threads) para resolver hostnames em paralelo.
+        - **Ganho de desempenho**: 4x a 50x mais rápido que a versão sequencial.
+        - Mantém a ordem original do log usando `Future` e uma fila de resultados.
+
+- **Formato de Log (Common Log Format)**:
+  ```
+  205.160.186.76 unknown - [17/Jun/2013:22:53:58 -0500] "GET /bgs/greenbg.gif HTTP 1.0" 200 50
   ```  
-- **`ForkJoinPool`**: Para divisão de tarefas em subtarefas (ex.: algoritmos divide-and-conquer).  
+    - O primeiro campo é o IP/hostname.
 
+- **Exemplo de Código (PooledWeblog)**:
+  ```java
+  ExecutorService executor = Executors.newFixedThreadPool(4);
+  Queue<LogEntry> results = new LinkedList<>();
+  // Para cada linha do log:
+  Future<String> future = executor.submit(new LookupTask(linha));
+  results.add(new LogEntry(linha, future));
+  ```
 
-**Use `Executors`** para gerenciar threads em aplicações de rede ou processamento paralelo.  
-- **Prefira pools fixos** para operações CPU-bound e pools dinâmicos para I/O-bound.  
-- **Evite criar threads manualmente** em loops — isso pode degradar o desempenho.  
+##### **Pontos-Chave**
+- **DNS Reverso**: Usado para verificar spammers e resolver hostnames em logs.
+- **Cache do `InetAddress`**: Acelera consultas repetidas ao mesmo IP.
+- **Multithreading**: Essencial para tarefas de rede (como DNS) com alta latência.
+- **Eficiência**:
+    - Processar logs offline evita sobrecarregar o servidor web.
+    - Thread pools evitam criar milhares de threads (problemas de memória).
 
-> **Dica**: Em servidores de rede (ex.: HTTP), pools de threads são essenciais para balancear carga e concorrência.
+##### **Exemplo Prático**
 
+Para usar `PooledWeblog`:
+```bash
+java PooledWeblog access.log
+```
+**Saída**:
+```
+example.com - [17/Jun/2013:22:53:58 -0500] "GET /bgs/greenbg.gif HTTP 1.0" 200 50
+```
+
+##### **Conclusão**
+
+A classe `InetAddress` permite:
+- **Combate a spam** via consultas DNS inteligentes.
+- **Otimização de logs** web com processamento paralelo.  
+  Ambos os casos mostram como operações de rede podem ser aceleradas com cache e multithreading.
