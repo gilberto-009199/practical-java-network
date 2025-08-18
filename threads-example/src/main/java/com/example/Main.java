@@ -24,8 +24,6 @@ public class Main {
         // SchedulingThreadExample
         new SchedulingThreadExample().example();
 
-        // PoolsAndExecutorsThreadExample
-
     }
 
 }
