@@ -22,6 +22,7 @@ public class Main {
         // @todo add 3° component for lock, dependencie cicle
 
         // SchedulingThreadExample
+        new SchedulingThreadExample().example();
 
         // PoolsAndExecutorsThreadExample
 
