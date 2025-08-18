@@ -8,7 +8,7 @@ public class Main {
         new InetAddressExample().example();
 
         // Network Interface
-        new NetworkInterfaceExample();
+        new NetworkInterfaceExample().example();
 
     }
 
