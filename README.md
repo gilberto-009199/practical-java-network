@@ -5,9 +5,10 @@ Content in Pratical:
   + [Streams](./streams-filters-example) - Streams, Filter, Buff and Readers/Writers;
   + [Program Zipper](./zipper) - FIle to GZip File, using GZIPOutputStream in `java.util.zip`;
   + [Threads](./threads-example) - Threads, Runnable, ExecutorService, Callable e Syncronized;
-  + [IP and Network Interfaces](./InetAddress-networkInterface-example) - InetAddress class, NetworkInterfaces class
+  + [IP and Network Interfaces](./InetAddress-networkInterface-example) - InetAddress class, NetworkInterfaces class;
   + [Program NsLookup](./nslookup) - DNS resolver using InetAddress;
-  + [URI and URL](./uri-url-example) - URI, URL, Proxy, Authentication in http
+  + [URI and URL](./uri-url-example) - URI, URL, Proxy, Authentication in http;
+  + [Program Tester Proxy](./testProxy) - test proxy in swing and URL;
 
 
 
