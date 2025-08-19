@@ -2,7 +2,7 @@
 > O livro e antigo, mais seus conceitos e ate example na maior funciona bem
 
 
-### Capitulo 4 - Internet Addresses
+### Internet Addresses
 
 Ele faz um longa descrição sobre como opera o ipv4 e o ipv6 , mas e o memsoque do capitulo 1. Depois começa a falar da classe `InetAddress`.
 
