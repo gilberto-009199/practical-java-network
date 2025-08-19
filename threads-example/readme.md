@@ -1,5 +1,5 @@
 
-### Capitulo 3 - Threads
+### Threads
 
 
 O autor nos fala oomo antigamente se usava fork de processo para cada nova conexão.
