@@ -1,5 +1,5 @@
 
-## Capitulo 8 - Sockets for Clients
+## Sockets for Clients
 
 
 ##### **1. Transmissão de Dados na Internet**  
