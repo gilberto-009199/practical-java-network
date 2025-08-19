@@ -14,6 +14,8 @@ public class URLExample implements Example {
     public void example() {
         try {
 
+            System.out.println("\n=== URL Exemplos ===\n");
+
             // 1. Criando URL
             createURL();
 

@@ -21,6 +21,7 @@ public class ProxyExample implements Example {
     @Override
     public void example() {
         try {
+            System.out.println("\n=== Proxy Config Exemplos ===\n");
 
             // 1. pegar System Properties do proxy
             getSystemProxyProperties();
