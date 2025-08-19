@@ -1,5 +1,5 @@
 
-## Capitulo 2 - Streams
+## Streams
 
 
 Observe que o autor usou um termo novo `Caracteres Multibytes`.
