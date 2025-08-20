@@ -10,11 +10,8 @@ public class Main {
         // socket client dict simple example
         new ClientDictSimple().example();
 
-        // socket client email send example
-
-        // socket client binary example
-
         // socket client proxy socks5 http example
+        new ClientHttpWithProxyExample().example();
 
         // socket client mapping port in host
 
