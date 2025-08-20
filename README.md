@@ -9,6 +9,7 @@ Content in Pratical:
   + [Program NsLookup](./nslookup) - DNS resolver using InetAddress;
   + [URI and URL](./uri-url-example) - URI, URL, Proxy, Authentication in http;
   + [Program Tester Proxy](./testProxy) - test proxy in swing and URL;
+  + [Socket Client](./socket-client-example) - Socket Client Example;
 
 
 
