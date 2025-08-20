@@ -4,25 +4,24 @@ public class Main {
 
     public static void main( String[] args ){
 
-        // ThreadsAndRunnableExample
-        new ThreadsAndRunnableExample().example();
+        // socket client http simple example
+        new ClientHttpExample().example();
 
-        // ReturningProcessThreadExample
-        new ReturningProcessThreadExample().example();
-        new CallableAndExecutorExample().example();
+        // socket client dict simple example
+        new ClientDictSimple().example();
 
-        // SyncronizationThreadExample
-        new SyncronizationThreadExample().example();
-        // @todo add example use atomic
+        // socket client email send example
 
+        // socket client binary example
 
-        // DeadLockThreadExample
-        new DeadLockThreadExample().example();
-        new DeadLockSolutionExample().example();
-        // @todo add 3° component for lock, dependencie cicle
+        // socket client proxy socks5 http example
 
-        // SchedulingThreadExample
-        new SchedulingThreadExample().example();
+        // socket client mapping port in host
+
+        // @todo create program client translate
+        // @todo create program port scan
+        // @todo create program client http
+        // @todo create program client http with buffer
 
     }
 

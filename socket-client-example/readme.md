@@ -58,9 +58,11 @@
 ##### **Exemplo Prático (Cliente Socket Simples)**  
 
 ```java  
-try (Socket socket = new Socket("example.com", 80);  
-     OutputStream out = socket.getOutputStream();  
-     InputStream in = socket.getInputStream()) {  
+try(
+        Socket socket = new Socket("example.com", 80);
+        OutputStream out = socket.getOutputStream();
+        InputStream in = socket.getInputStream();
+) {  
 
     // Envia uma requisição HTTP GET  
     String request = "GET / HTTP/1.1\r\nHost: example.com\r\n\r\n";  
