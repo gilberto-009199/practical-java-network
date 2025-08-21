@@ -45,6 +45,9 @@ public class ServerHttpExample implements Example {
              BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
              OutputStream out = client.getOutputStream()) {
 
+
+            Thread.sleep(4000);
+
             // Ler request line
             String requestLine = in.readLine();
             if (requestLine == null) {
@@ -83,6 +86,9 @@ public class ServerHttpExample implements Example {
             System.out.println("🔗 HTTP Version: " + httpVersion);
             System.out.println("📋 Headers recebidos: " + headers.size());
 
+
+
+
             // Processar request baseado no método
             switch (method) {
                 case "GET":
@@ -100,6 +106,8 @@ public class ServerHttpExample implements Example {
 
         } catch (IOException e) {
             System.err.println("❌ Erro ao processar request: " + e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -124,6 +132,8 @@ public class ServerHttpExample implements Example {
             </body>
             </html>
             """.formatted(clientAddress, path, headers.size());
+
+
 
         sendResponse(out, 200, "OK", responseBody);
     }
