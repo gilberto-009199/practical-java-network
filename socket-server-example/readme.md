@@ -1,7 +1,6 @@
 
 ## Sockets for Servers
 
-O capítulo anterior abordou sockets do ponto de vista de clientes — programas que se conectam a um servidor. No entanto, sockets de cliente sozinhos não são suficientes, pois dependem de um servidor para se comunicarem.
 A classe `Socket` não é adequada para criar servidores, já que um servidor não sabe antecipadamente qual cliente tentará se conectar ou quando isso acontecerá.  
 Para lidar com essa situação, Java fornece a classe `ServerSocket`, que representa sockets do lado do servidor. Sua função é aguardar conexões de entrada, assim como um recepcionista espera chamadas telefônicas. Tecnicamente, um `ServerSocket` fica em um *port* específico do servidor, aguardando tentativas de conexão de clientes remotos. Quando um cliente tenta se conectar, o servidor estabelece a comunicação e retorna um objeto `Socket` convencional para troca de dados entre as duas máquinas.
 
