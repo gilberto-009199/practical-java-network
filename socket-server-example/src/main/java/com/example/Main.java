@@ -10,9 +10,6 @@ public class Main {
         // socket server http multi thread example
         new ServerHttpMultiThreadExample().example();
 
-        // socket server http with authorization example
-        new ServerHttpAthorizationExample().example();
-
     }
 
 }
