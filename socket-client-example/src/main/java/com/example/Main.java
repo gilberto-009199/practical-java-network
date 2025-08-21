@@ -13,12 +13,11 @@ public class Main {
         // socket client proxy socks5 http example
         new ClientHttpWithProxyExample().example();
 
-        // socket client mapping port in host
+        // socket mapping port in host
+        new SocketMappingHost().example();
 
         // @todo create program client translate
         // @todo create program port scan
-        // @todo create program client http
-        // @todo create program client http with buffer
 
     }
 
