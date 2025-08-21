@@ -11,7 +11,9 @@ Content in Pratical:
   + [Program Tester Proxy](./testProxy) - test proxy in swing and URL;
   + [Socket Client](./socket-client-example) - Socket Client Example;
   + [Program Translate](./translate) - Translate Gui using Swing and Dict protocol. 
+  + [Socket Server](./socket-server-example) - Socket Server Example 
 
+// @todo add server file list http in example program swing 
 
 ## References
 
