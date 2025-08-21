@@ -12,8 +12,12 @@ Content in Pratical:
   + [Socket Client](./socket-client-example) - Socket Client Example;
   + [Program Translate](./translate) - Translate Gui using Swing and Dict protocol. 
   + [Socket Server](./socket-server-example) - Socket Server Example 
+  
+// @todo add server file list http in example program swing, select folder, expor files in dir 
+// @todo add example operator binary in java with swing show binary and table 0 0 1 1
+//  example big endian and Little endian
 
-// @todo add server file list http in example program swing 
+// @todo add example secure socket in ssl and tls
 
 ## References
 
