@@ -13,16 +13,7 @@ Content in Pratical:
   + 9° [Program Translate](./translate) - Translate Gui using Swing and Dict protocol. 
   + 10° [Socket Server](./socket-server-example) - Socket Server Example 
   + 11° [Program File Server Http](./file-server-http) - FileServer in Http with Swing(Upload, Download);
-  + 12° [Secure Socket]() - Secure Socket with ssl and tls;
-
-
-
-
-// @todo add server file list http in example program swing, select folder, expor files in dir 
-// @todo add example operator binary in java with swing show binary and table 0 0 1 1
-//  example big endian and Little endian
-
-// @todo add example secure socket in ssl and tls
+  + 12° [Secure Socket](./) - Secure Socket with ssl and tls;
 
 ## References
 
