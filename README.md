@@ -1,6 +1,6 @@
 # Practical Java Network
 
-Content in Pratical:
+Content in Practical:
 
   + 1° [Streams](./streams-filters-example) - Streams, Filter, Buff and Readers/Writers;
   + 2° [Program Zipper](./zipper) - FIle to GZip File, using GZIPOutputStream in `java.util.zip`;
