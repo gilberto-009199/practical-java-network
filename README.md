@@ -13,6 +13,9 @@ Content in Practical:
   + 9° [Program Translate](./translate) - Translate Gui using Swing and Dict protocol. 
   + 10° [Socket Server](./socket-server-example) - Socket Server Example 
   + 11° [Program File Server Http](./file-server-http) - FileServer in Http with Swing(Upload, Download);
+
+**UNDER CONSTRUCTION**:
+
   + 12° [UNDER CONSTRUCTION Secure Socket](./secure-sockets-example) - **UNDER CONSTRUCTION** - Secure Socket with ssl and tls;
   + 13° [UNDER CONSTRUCTION Nonblocking I/O](./nio-example) - **UNDER CONSTRUCTION** -
   + 14° [UNDER CONSTRUCTION UDP Datagram](./udp-example) - **UNDER CONSTRUCTION** -
