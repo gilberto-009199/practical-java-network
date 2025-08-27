@@ -1,6 +1,6 @@
-# Practical Java Network
+# Pratica Programação de Redes com Java
 
-Content in Practical:
+Conteudo da pratica:
 
   + 1° [Streams](./streams-filters-example) - Streams, Filter, Buff and Readers/Writers;
   + 2° [Program Zipper](./zipper) - FIle to GZip File, using GZIPOutputStream in `java.util.zip`;
@@ -21,7 +21,7 @@ Content in Practical:
   + 14° [UNDER CONSTRUCTION UDP Datagram](./udp-example) - **UNDER CONSTRUCTION** -
   + 15° [UNDER CONSTRUCTION MULTICASH](./multicast-example) - **UNDER CONSTRUCTION** -
 
-## References
+## Referencia
 
   + [Book Java Network Programing](https://www.oreilly.com/library/view/java-network-programming/9781449365936/) - Developing Networking Applications in Java<br/>
 <img src="./java-networking-programing.png" width="128px" alt="book reference Java Networking Programing">
