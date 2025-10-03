@@ -14,14 +14,12 @@ Conteudo da pratica:
   + 3° [Threads](./threads-example) - Threads, Runnable, ExecutorService, Callable e Syncronized;
   + 4° [IP and Network Interfaces](./InetAddress-networkInterface-example) - InetAddress class, NetworkInterfaces class;
   + 5° [Program NsLookup](./nslookup) - DNS resolver using InetAddress;
-
-| <img src="./translate.gif" width="512px" alt="DNS resolver using InetAddress, iamge"> | 
-| :--- | 
+ 
+| <img src="./nslookup.gif" width="512px"> | 
+| :--- |
 
   + 6° [URI and URL](./uri-url-example) - URI, URL, Proxy, Authentication in http;
   + 7° [Program Tester Proxy](./testProxy) - test proxy in swing and URL;
-
-
 
 | <img src="./test-proxy.gif" width="512px" alt="test proxy in swing and URL, image"> |
 | :--- | 
@@ -29,7 +27,7 @@ Conteudo da pratica:
   + 8° [Socket Client](./socket-client-example) - Socket Client Example;
   + 9° [Program Translate](./translate) - Translate Gui using Swing and Dict protocol.
 
-| <img src="./nslookup.gif" width="512px"> | 
+| <img src="./translate.gif" width="512px" alt="DNS resolver using InetAddress, iamge"> | 
 | :--- |
 
   + 10° [Socket Server](./socket-server-example) - Socket Server Example 
