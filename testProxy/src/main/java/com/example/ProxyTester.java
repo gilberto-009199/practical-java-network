@@ -37,11 +37,11 @@ public class ProxyTester extends JFrame {
         configPanel.add(new JLabel()); // Espaço vazio
 
         configPanel.add(new JLabel("Host do Proxy:"));
-        proxyHostField = new JTextField("115.72.2.169");
+        proxyHostField = new JTextField("20.27.15.111");
         configPanel.add(proxyHostField);
 
         configPanel.add(new JLabel("Porta do Proxy:"));
-        proxyPortField = new JTextField("10022");
+        proxyPortField = new JTextField("8561");
         configPanel.add(proxyPortField);
 
         configPanel.add(new JLabel("URL para testar:"));
