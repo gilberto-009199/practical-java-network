@@ -1,18 +1,44 @@
 # Pratica Programação de Redes com Java
 
+
+
+
 Conteudo da pratica:
 
   + 1° [Streams](./streams-filters-example) - Streams, Filter, Buff and Readers/Writers;
   + 2° [Program Zipper](./zipper) - FIle to GZip File, using GZIPOutputStream in `java.util.zip`;
+
+| <img src="./zipper-screenshot.gif" width="512px" alt="FIle to GZip File, using GZIPOutputStream, image"> |
+| :--- |
+
   + 3° [Threads](./threads-example) - Threads, Runnable, ExecutorService, Callable e Syncronized;
   + 4° [IP and Network Interfaces](./InetAddress-networkInterface-example) - InetAddress class, NetworkInterfaces class;
   + 5° [Program NsLookup](./nslookup) - DNS resolver using InetAddress;
+
+| <img src="./translate.gif" width="512px" alt="DNS resolver using InetAddress, iamge"> | 
+| :--- | 
+
   + 6° [URI and URL](./uri-url-example) - URI, URL, Proxy, Authentication in http;
   + 7° [Program Tester Proxy](./testProxy) - test proxy in swing and URL;
+
+
+
+| <img src="./test-proxy.gif" width="512px" alt="test proxy in swing and URL, image"> |
+| :--- | 
+
   + 8° [Socket Client](./socket-client-example) - Socket Client Example;
-  + 9° [Program Translate](./translate) - Translate Gui using Swing and Dict protocol. 
+  + 9° [Program Translate](./translate) - Translate Gui using Swing and Dict protocol.
+
+| <img src="./nslookup.gif" width="512px"> | 
+| :--- |
+
   + 10° [Socket Server](./socket-server-example) - Socket Server Example 
   + 11° [Program File Server Http](./file-server-http) - FileServer in Http with Swing(Upload, Download);
+
+
+| <img src="./file-server-screenshot.gif" width="512px" alt="FileServer in Http with Swing(Upload, Download) image"> | 
+| :--- |
+
 
 **UNDER CONSTRUCTION**:
 
